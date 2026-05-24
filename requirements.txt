@@ -1,0 +1,8 @@
+tensorflow
+opencv-python
+numpy
+pandas
+scikit-learn
+pillow
+django
+djangorestframework

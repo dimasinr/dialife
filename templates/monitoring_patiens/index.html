@@ -1,0 +1,94 @@
+{% extends "layouts/app.html" %}
+{% load dialife_tags %}
+{% block title %}DIALIFE — Patient Monitoring{% endblock %}
+{% block topbar_search %}
+<form method="get" class="relative ml-4">
+  <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">search</span>
+  <input name="q" value="{{ search_query }}" class="pl-10 pr-4 py-1.5 bg-surface-container-low border-none rounded-full w-64 text-body-md focus:ring-2 focus:ring-primary/20" placeholder="Search patients..." type="text"/>
+  {% if filter_status %}<input type="hidden" name="status" value="{{ filter_status }}"/>{% endif %}
+  {% if filter_ward %}<input type="hidden" name="ward" value="{{ filter_ward }}"/>{% endif %}
+</form>
+{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-6">
+  <div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant flex items-center gap-4">
+    <span class="material-symbols-outlined text-primary text-3xl">groups</span>
+    <div><p class="text-label-md text-on-surface-variant">Total</p><p class="font-headline-sm">{{ total_patients }}</p></div>
+  </div>
+  <div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant flex items-center gap-4">
+    <span class="material-symbols-outlined text-error text-3xl">priority_high</span>
+    <div><p class="text-label-md text-on-surface-variant">Critical</p><p class="font-headline-sm text-error">{{ critical_count }}</p></div>
+  </div>
+  <div class="md:col-span-2 bg-surface-container-lowest p-3 px-5 rounded-xl border border-outline-variant flex flex-wrap items-center gap-4">
+    <form method="get" class="flex items-center gap-2">
+      <label class="font-label-md text-on-surface-variant">Status:</label>
+      <select name="status" onchange="this.form.submit()" class="bg-surface-container-low rounded-lg py-1.5 text-body-md">
+        <option value="">All</option>
+        <option value="critical" {% if filter_status == 'critical' %}selected{% endif %}>Critical</option>
+        <option value="warning" {% if filter_status == 'warning' %}selected{% endif %}>Warning</option>
+        <option value="stable" {% if filter_status == 'stable' %}selected{% endif %}>Safe</option>
+      </select>
+      {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}"/>{% endif %}
+    </form>
+    <form method="get" class="flex items-center gap-2">
+      <label class="font-label-md text-on-surface-variant">Ward:</label>
+      <select name="ward" onchange="this.form.submit()" class="bg-surface-container-low rounded-lg py-1.5 text-body-md">
+        <option value="">All</option>
+        {% for w in wards %}
+        <option value="{{ w }}" {% if filter_ward == w %}selected{% endif %}>{{ w }}</option>
+        {% endfor %}
+      </select>
+      {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}"/>{% endif %}
+      {% if filter_status %}<input type="hidden" name="status" value="{{ filter_status }}"/>{% endif %}
+    </form>
+  </div>
+</div>
+
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden">
+  <table class="w-full text-left">
+    <thead>
+      <tr class="bg-surface-container text-on-surface-variant border-b border-outline-variant">
+        <th class="px-6 py-4 font-label-md">Patient</th>
+        <th class="px-4 py-4 font-label-md">Age</th>
+        <th class="px-4 py-4 font-label-md text-right">Dry Weight</th>
+        <th class="px-4 py-4 font-label-md text-right">24h Urine</th>
+        <th class="px-6 py-4 font-label-md">Fluid Intake</th>
+        <th class="px-4 py-4 font-label-md">Status</th>
+        <th class="px-6 py-4 font-label-md text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-outline-variant/30">
+      {% for patient in patients %}
+      <tr class="hover:bg-surface-container-low/50">
+        <td class="px-6 py-4">
+          <p class="font-bold">{{ patient.full_name }}</p>
+          <p class="text-[11px] text-on-surface-variant">ID: {{ patient.patient_code }} • {{ patient.ward }}</p>
+        </td>
+        <td class="px-4 py-4 font-data-mono">{{ patient.age }}y</td>
+        <td class="px-4 py-4 text-right font-data-mono">{{ patient.dry_weight_kg }} kg</td>
+        <td class="px-4 py-4 text-right font-data-mono {% if patient.urine_output_24h_ml < 300 %}text-error{% endif %}">{{ patient.urine_output_24h_ml }} mL</td>
+        <td class="px-6 py-4">
+          <div class="max-w-[180px]">
+            <div class="flex justify-between text-[11px] mb-1 font-data-mono">
+              <span>{{ patient.fluid_intake_today_ml }} / {{ patient.daily_fluid_limit_ml }} mL</span>
+              <span class="{% if patient.fluid_over_limit %}text-error font-bold{% elif patient.fluid_percent >= 85 %}text-secondary{% else %}text-primary{% endif %}">{{ patient.fluid_percent }}%</span>
+            </div>
+            <div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+              <div class="h-full {{ patient.status|status_bar_class }} rounded-full" style="width: {{ patient|fluid_bar_width }}%"></div>
+            </div>
+          </div>
+        </td>
+        <td class="px-4 py-4">
+          <span class="px-3 py-1 text-[11px] font-bold rounded-full uppercase {{ patient.status|status_badge_class }}">{{ patient.get_status_display }}</span>
+        </td>
+        <td class="px-6 py-4 text-right">
+          <a href="{% url 'patient_detail' patient.pk %}" class="inline-block bg-primary text-on-primary font-label-md px-4 py-1.5 rounded-lg hover:bg-primary-container">View Details</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="p-8 text-center text-on-surface-variant">No patients match your filters.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

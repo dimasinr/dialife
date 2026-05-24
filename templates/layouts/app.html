@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+{% include "includes/head.html" %}
+</head>
+<body class="bg-background text-on-surface">
+{% include "includes/sidebar.html" %}
+<main class="ml-64 min-h-screen flex flex-col">
+  {% include "includes/topbar.html" %}
+  <div class="p-container-padding flex-1">
+    {% if messages %}
+    <div class="mb-4 space-y-2">
+      {% for message in messages %}
+      <p class="px-4 py-2 rounded-lg text-body-md {% if message.tags == 'error' %}bg-error-container text-on-error-container{% else %}bg-primary/10 text-primary{% endif %}">{{ message }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
+</main>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

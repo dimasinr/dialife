@@ -1,0 +1,97 @@
+{% extends "layouts/app.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block content %}
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 mb-gutter flex flex-wrap items-center justify-between gap-4">
+  <div class="flex items-center gap-6">
+    <div class="w-20 h-20 rounded-xl overflow-hidden bg-surface-container">
+      {% if patient.photo_url %}<img class="w-full h-full object-cover" src="{{ patient.photo_url }}" alt="{{ patient.full_name }}"/>
+      {% else %}<div class="w-full h-full flex items-center justify-center text-primary font-bold text-2xl">{{ patient.full_name|slice:":1" }}</div>{% endif %}
+    </div>
+    <div>
+      <div class="flex items-center gap-3 mb-1">
+        <h1 class="font-headline-md text-headline-md font-bold">{{ patient.full_name }}</h1>
+        <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant rounded-full font-label-md">ID: {{ patient.patient_code }}</span>
+      </div>
+      <div class="flex flex-wrap gap-6 text-on-surface-variant text-body-md">
+        <span>{{ patient.age }} Years Old</span>
+        {% if patient.blood_type %}<span>{{ patient.blood_type }}</span>{% endif %}
+        {% if patient.diagnosis %}<span class="text-primary font-bold">{{ patient.diagnosis }}</span>{% endif %}
+        <span>Bed {{ patient.bed|default:"—" }} • {{ patient.ward }}</span>
+      </div>
+    </div>
+  </div>
+  <a href="{% url 'patient_list' %}" class="text-primary font-label-md hover:underline">← Back to list</a>
+</div>
+
+<div class="bento-grid">
+  <div class="col-span-12 lg:col-span-4 bg-white border border-outline-variant rounded-xl p-6">
+    <h3 class="font-headline-sm border-b border-outline-variant pb-4 mb-4">Today's Fluid Balance</h3>
+    <div class="text-center py-6">
+      <span class="text-4xl font-bold">{{ patient.fluid_intake_today_ml }}</span>
+      <span class="text-on-surface-variant"> / {{ patient.daily_fluid_limit_ml }} ml</span>
+      <p class="mt-2 text-label-md text-on-surface-variant">{{ fluid_percent }}% of daily limit</p>
+    </div>
+    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant text-center">
+      <div><p class="text-xs uppercase text-on-surface-variant">Intake</p><p class="text-lg font-bold text-secondary">{{ intake_today }}ml</p></div>
+      <div><p class="text-xs uppercase text-on-surface-variant">Output</p><p class="text-lg font-bold text-primary">{{ output_today }}ml</p></div>
+    </div>
+  </div>
+
+  <div class="col-span-12 lg:col-span-8 bg-white border border-outline-variant rounded-xl p-6">
+    <h3 class="font-headline-sm mb-6">Clinical Parameters</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div class="p-4 bg-surface-container-low rounded-lg border border-outline-variant/30">
+        <p class="font-label-md text-on-surface-variant mb-2">Weight</p>
+        <p class="font-headline-md">{% if vital %}{{ vital.weight_kg }}{% else %}{{ patient.dry_weight_kg }}{% endif %} <span class="text-body-md">kg</span></p>
+      </div>
+      <div class="p-4 bg-surface-container-low rounded-lg border border-outline-variant/30">
+        <p class="font-label-md text-on-surface-variant mb-2">Urine Output</p>
+        <p class="font-headline-md {% if patient.urine_output_24h_ml < 400 %}text-error{% endif %}">{{ patient.urine_output_24h_ml }} <span class="text-body-md">ml/24h</span></p>
+      </div>
+      <div class="p-4 bg-surface-container-low rounded-lg border border-outline-variant/30">
+        <p class="font-label-md text-on-surface-variant mb-2">Temperature</p>
+        <p class="font-headline-md">{% if vital %}{{ vital.temperature_c }}{% else %}36.7{% endif %} <span class="text-body-md">°C</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-span-12 bg-white border border-outline-variant rounded-xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-outline-variant bg-surface-container-low/30">
+      <h3 class="font-headline-sm">Activity Log</h3>
+    </div>
+    <table class="w-full text-left">
+      <thead>
+        <tr class="bg-surface-container-low font-label-md text-on-surface-variant uppercase">
+          <th class="px-6 py-4">Time</th>
+          <th class="px-6 py-4">Category</th>
+          <th class="px-6 py-4">Description</th>
+          <th class="px-6 py-4">Volume</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-outline-variant">
+        {% for log in fluid_logs %}
+        <tr class="hover:bg-surface-container-low/50">
+          <td class="px-6 py-4 font-data-mono">{{ log.logged_at|time:"g:i A" }}</td>
+          <td class="px-6 py-4"><span class="px-2 py-1 rounded font-label-md bg-surface-container">{{ log.get_category_display }}</span></td>
+          <td class="px-6 py-4">{{ log.description }}</td>
+          <td class="px-6 py-4 font-bold">{{ log.volume_ml }}ml</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="px-6 py-8 text-on-surface-variant text-center">No fluid logs yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if active_alert %}
+<div class="fixed top-20 right-8 z-50 max-w-sm bg-error-container border-l-4 border-error p-4 rounded shadow-lg">
+  <h4 class="font-label-md font-bold text-on-error-container">{{ active_alert.title }}</h4>
+  <p class="font-body-sm text-on-error-container mt-1">{{ active_alert.message }}</p>
+  <form method="post" action="{% url 'alert_resolve' active_alert.pk %}" class="mt-3">
+    {% csrf_token %}
+    <button type="submit" class="text-sm font-bold text-primary">Mark resolved</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

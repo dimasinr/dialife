@@ -1,0 +1,55 @@
+{% extends "layouts/app.html" %}
+{% load dialife_tags %}
+{% block title %}DIALIFE | Alerts{% endblock %}
+{% block content %}
+<div class="flex flex-col lg:flex-row gap-6 min-h-[70vh]">
+  <aside class="w-full lg:w-72 bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+    <h3 class="font-label-md text-primary uppercase tracking-widest mb-4">Search</h3>
+    <form method="get">
+      <input name="q" value="{{ search_query }}" class="w-full px-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-body-md mb-4" placeholder="Patient name or ID..." type="text"/>
+      <h3 class="font-label-md text-primary uppercase tracking-widest mb-3">Severity</h3>
+      <select name="severity" class="w-full mb-4 rounded-lg bg-surface-container-low py-2" onchange="this.form.submit()">
+        <option value="">All</option>
+        <option value="critical" {% if filter_severity == 'critical' %}selected{% endif %}>Critical</option>
+        <option value="warning" {% if filter_severity == 'warning' %}selected{% endif %}>Warning</option>
+        <option value="info" {% if filter_severity == 'info' %}selected{% endif %}>Information</option>
+      </select>
+      <label class="flex items-center gap-2 text-body-md mb-4">
+        <input type="checkbox" name="resolved" value="1" {% if show_resolved %}checked{% endif %} onchange="this.form.submit()"/>
+        Show resolved
+      </label>
+      <button type="submit" class="w-full bg-primary text-on-primary py-2 rounded-lg font-label-md">Apply</button>
+    </form>
+    <p class="mt-4 text-body-sm text-on-surface-variant">{{ critical_count }} critical alert(s) open</p>
+  </aside>
+
+  <section class="flex-1 space-y-4">
+    {% for alert in alerts %}
+    <div class="bg-surface-container-lowest border-l-4 {{ alert.severity|severity_border_class }} rounded-lg border border-outline-variant p-4 flex flex-wrap items-center gap-4 shadow-sm">
+      <div class="w-12 h-12 rounded-full {% if alert.severity == 'critical' %}bg-error-container{% else %}bg-secondary-fixed{% endif %} flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined {% if alert.severity == 'critical' %}text-error{% else %}text-secondary{% endif %}">warning</span>
+      </div>
+      <div class="flex-1 min-w-[200px]">
+        <div class="flex flex-wrap items-center gap-2 mb-1">
+          <span class="text-label-md text-on-surface-variant uppercase">{{ alert.created_at|time:"g:i A" }}</span>
+          {% if alert.patient %}<span class="font-headline-sm">{{ alert.patient.full_name }}</span>{% elif alert.equipment_ref %}<span class="font-headline-sm">{{ alert.equipment_ref }}</span>{% endif %}
+          <span class="px-2 py-0.5 text-[10px] font-bold uppercase border rounded">{{ alert.get_severity_display }}</span>
+          {% if alert.is_resolved %}<span class="text-primary text-label-md">Resolved</span>{% endif %}
+        </div>
+        <p class="font-body-lg font-bold">{{ alert.title }}</p>
+        <p class="text-body-sm text-on-surface-variant mt-1">{{ alert.message }}</p>
+        {% if alert.location %}<p class="text-[10px] uppercase mt-1 text-on-surface-variant">{{ alert.location }}</p>{% endif %}
+      </div>
+      {% if not alert.is_resolved %}
+      <form method="post" action="{% url 'alert_resolve' alert.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="px-5 py-2.5 bg-primary text-on-primary rounded font-bold text-label-md">Resolve</button>
+      </form>
+      {% endif %}
+    </div>
+    {% empty %}
+    <p class="text-on-surface-variant text-center py-12">No alerts found.</p>
+    {% endfor %}
+  </section>
+</div>
+{% endblock %}

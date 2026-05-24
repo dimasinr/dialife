@@ -1,0 +1,21 @@
+<header class="flex justify-between items-center h-16 px-container-padding w-full sticky top-0 z-50 bg-surface-container-lowest border-b border-outline-variant">
+  <div class="flex items-center gap-4 flex-1">
+    {% block topbar_left %}
+    <h2 class="font-headline-sm text-headline-sm text-on-surface">{{ page_title }}</h2>
+    {% endblock %}
+    {% block topbar_search %}{% endblock %}
+  </div>
+  <div class="flex items-center gap-4">
+    <div class="flex items-center gap-3 pl-2">
+      <div class="text-right hidden sm:block">
+        <p class="font-label-md text-label-md text-on-surface leading-tight">{{ nurse_name }}</p>
+        <p class="font-body-sm text-[11px] text-on-surface-variant uppercase tracking-tighter">{{ nurse_title }} • {{ nurse_ward }}</p>
+      </div>
+      {% if nurse_avatar %}
+      <img alt="Nurse" class="w-10 h-10 rounded-full border border-primary object-cover" src="{{ nurse_avatar }}"/>
+      {% else %}
+      <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold">{{ nurse_name|slice:":1" }}</div>
+      {% endif %}
+    </div>
+  </div>
+</header>

@@ -1,0 +1,47 @@
+{% extends "layouts/auth.html" %}
+{% block title %}DIALIFE — Nurse Portal Login{% endblock %}
+{% block content %}
+<div class="flex h-full w-full">
+  <div class="hidden lg:block lg:w-3/5 relative overflow-hidden bg-surface-container-high">
+    <img class="absolute inset-0 w-full h-full object-cover" alt="Dialysis unit" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnjobwmvTZWKOzEN0gSrS2kgtXrHWngdpwgZh6cJg2XNyKlO9CQZ-I3TOOOx-vzTUl3CntaDY89nfrXeFZX-QIkamBdryaacuGb_gj-vMA1lPu-Xg-MiqPrEB6ZZzCGODDm1FoEASoGjlvSf7gEMq0zBfo_ZMReoTiChdzjNfoyLThngSrDhd7esl1TSdeOGsf9O1-RG-qUhrCoRiwXp26uAZETtIHSBhYU0Ot_JfTsgTOESK1UXlgAhYD3GNAf9nonTari--MYegK"/>
+    <div class="absolute inset-0 bg-primary/10 mix-blend-multiply"></div>
+    <div class="absolute bottom-12 left-12 max-w-lg z-10">
+      <h2 class="font-display-lg text-display-lg text-on-primary-container mb-4">Precision in Patient Care</h2>
+      <p class="font-body-lg text-body-lg text-on-primary-container/80">Real-time telemetry and fluid management for dialysis monitoring.</p>
+    </div>
+  </div>
+  <main class="w-full lg:w-2/5 flex flex-col justify-center items-center px-container-padding bg-surface-container-lowest">
+    <div class="mb-12 flex flex-col items-center">
+      <img alt="DIALIFE" class="h-24 w-auto mb-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXUn0LjXIPr0xtPWT7DMZezamZMJksiYk_mkLXFD_Tv3SUmiMVPewWRmHJQwqjh-OufBP4vxsLnS0YAnHAHk_zuvi7JroBfZBUCMeYtuApFJFHr253yyhPmUptRi5NLcgitFU-BxDkF6LUFx00PzLj9Gd4A2VPH9Q8vxM9aOnkLSzg_yxvzrFddISrTkFk3cRIauC2xjpHocnXQu1BrMhL1Lpu8UPUkxG1BmEqsd35HznxZstzeNMSOvyvjEZCXFB54O9PnYIy_VdT"/>
+      <h1 class="font-headline-md text-headline-md text-on-surface">Nurse Portal Login</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant mt-2 text-center max-w-sm">Enter your clinical credentials to access patient monitoring.</p>
+    </div>
+    {% if messages %}
+    {% for message in messages %}
+    <p class="mb-4 w-full max-w-md px-4 py-2 rounded-lg bg-error-container text-on-error-container text-body-md">{{ message }}</p>
+    {% endfor %}
+    {% endif %}
+    <form method="post" action="{% url 'login' %}" class="w-full max-w-md space-y-6">
+      {% csrf_token %}
+      <div class="space-y-2">
+        <label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2" for="employee_id">
+          <span class="material-symbols-outlined text-[18px]">person</span> Employee ID
+        </label>
+        <input class="w-full bg-surface border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary h-12 px-4 rounded-lg font-body-md" id="employee_id" name="employee_id" placeholder="DI-000001" required type="text" value="{{ request.POST.employee_id|default:'' }}"/>
+      </div>
+      <div class="space-y-2">
+        <label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2" for="password">
+          <span class="material-symbols-outlined text-[18px]">lock</span> Password
+        </label>
+        <input class="w-full bg-surface border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary h-12 px-4 rounded-lg font-body-md" id="password" name="password" placeholder="••••••••" required type="password"/>
+      </div>
+      <button class="w-full bg-primary hover:bg-primary-container text-on-primary font-headline-sm h-14 rounded-xl transition-all flex items-center justify-center gap-3 shadow-md" type="submit">
+        Sign In <span class="material-symbols-outlined">login</span>
+      </button>
+    </form>
+    <footer class="mt-16 w-full max-w-md text-center">
+      <p class="font-body-sm text-body-sm text-on-surface-variant">© {% now "Y" %} DIALIFE • HIPAA Compliant</p>
+    </footer>
+  </main>
+</div>
+{% endblock %}

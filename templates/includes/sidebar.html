@@ -1,0 +1,30 @@
+<aside class="fixed left-0 top-0 h-full flex flex-col py-6 z-40 bg-surface-container-low border-r border-outline-variant w-64">
+  <div class="px-6 mb-8 flex items-center gap-3">
+    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuASJqnRGQr6U3lKR1-nv9SQ7BlonwnZPbpG7-LhtuKDOtDzf7g1xLkjWbs28MfrOmCff7KBGiItzFV2gBbvIYlMCQo6qgoOAhYy8i3vrah3VyRksjbWhSLvhkivR9zC8Ra3dzXlpcW9UHlUAfqJ0naTpQBHpMLUOSLNNFgmgDb03qsE4N8YGEY4UYCkkfj5OYRGVhlZ6caVVjNIKN9eHj68BU8EMgTewfFirZwFbkUi8JVTG_fv344jUgHCkfWLAGSKvsXLGXzI7ALG" alt="DIALIFE" class="w-10 h-10 rounded-lg object-contain"/>
+    <div>
+      <h1 class="font-headline-md text-headline-md font-extrabold text-primary leading-none">DIALIFE</h1>
+      <p class="font-label-md text-label-md text-on-surface-variant opacity-70">Clinical Monitoring</p>
+    </div>
+  </div>
+  <nav class="flex-1 space-y-1">
+    <a href="{% url 'dashboard' %}" class="{% if nav_active == 'dashboard' %}bg-primary-container text-on-primary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-variant/50{% endif %} mx-2 px-3 py-2 rounded-lg flex items-center gap-3 transition-all">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="font-label-md text-label-md">Dashboard</span>
+    </a>
+    <a href="{% url 'patient_list' %}" class="{% if nav_active == 'patients' %}bg-primary-container text-on-primary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-variant/50{% endif %} mx-2 px-3 py-2 rounded-lg flex items-center gap-3 transition-all">
+      <span class="material-symbols-outlined">group</span>
+      <span class="font-label-md text-label-md">Patient List</span>
+    </a>
+    <a href="{% url 'alerts' %}" class="{% if nav_active == 'alerts' %}bg-primary-container text-on-primary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-variant/50{% endif %} mx-2 px-3 py-2 rounded-lg flex items-center gap-3 transition-all">
+      <span class="material-symbols-outlined">notifications_active</span>
+      <span class="font-label-md text-label-md">Alerts</span>
+      {% if active_alert_count %}<span class="ml-auto bg-error text-white text-[10px] px-1.5 py-0.5 rounded-full">{{ active_alert_count }}</span>{% endif %}
+    </a>
+  </nav>
+  <div class="border-t border-outline-variant pt-4">
+    <a href="{% url 'logout' %}" class="text-on-surface-variant hover:bg-surface-variant/50 mx-2 px-3 py-2 rounded-lg flex items-center gap-3 transition-all">
+      <span class="material-symbols-outlined">logout</span>
+      <span class="font-label-md text-label-md">Sign Out</span>
+    </a>
+  </div>
+</aside>
