@@ -138,7 +138,7 @@ class FoodItemSerializer(serializers.ModelSerializer):
             'potassium',
             'phosphorus',
             'sodium',
-            'status',
+            'hd_status',
             'description',
         )
 
