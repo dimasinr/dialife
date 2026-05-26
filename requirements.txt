@@ -6,3 +6,5 @@ scikit-learn
 pillow
 django
 djangorestframework
+djangorestframework-simplejwt
+Pillow

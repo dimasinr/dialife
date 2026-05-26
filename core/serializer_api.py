@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Alert, FluidLog, NurseProfile, Patient, VitalReading
+from .models import Alert, FluidLog, NurseProfile, Patient, UserProfile, UserRole, VitalReading
 
 
 class NurseProfileSerializer(serializers.ModelSerializer):
@@ -46,6 +46,7 @@ class RegisterNurseSerializer(serializers.Serializer):
             first_name=validated_data['first_name'],
             last_name=validated_data.get('last_name', ''),
         )
+        UserProfile.objects.get_or_create(user=user, defaults={'role': UserRole.NURSE})
         NurseProfile.objects.create(
             user=user,
             employee_id=validated_data['employee_id'],

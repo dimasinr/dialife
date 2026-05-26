@@ -1,0 +1,782 @@
+# Product Requirements Document (PRD)
+
+# HD Care Mobile API System
+
+## AI-Based Hemodialysis Monitoring Platform
+
+---
+
+# 1. Product Overview
+
+## Product Name
+
+HD Care (DIALIFE)
+
+---
+
+## Product Description
+
+HD Care adalah platform monitoring pasien Hemodialysis berbasis AI yang membantu pasien memonitor:
+
+* asupan cairan
+* makanan dan minuman
+* nutrisi
+* urine output
+* keseimbangan cairan harian
+
+Sistem menggunakan:
+
+* Mobile App Flutter
+* REST API Django
+* AI Food & Urine Detection
+
+---
+
+# 2. Objective
+
+Membangun backend API yang:
+
+* ringan
+* scalable
+* realtime
+* mudah diintegrasikan dengan Flutter
+* mendukung AI inference
+
+---
+
+# 3. Mobile Navigation Structure
+
+## Bottom Navigation
+
+```text id="1e40va"
+[ Beranda ]
+[ Kalkulator ]
+[ Nutrisi ]
+[ Riwayat ]
+[ Akun ]
+```
+
+---
+
+# 4. Core Features
+
+# 4.1 BERANDA
+
+## Tujuan
+
+Monitoring cairan harian pasien.
+
+---
+
+# UI Components
+
+## A. Fluid Intake Chart
+
+Menampilkan:
+
+* total intake cairan
+* batas cairan harian
+* progress chart
+
+---
+
+## B. Status Cairan
+
+Status:
+
+* Aman
+* Waspada
+* Melebihi batas
+
+---
+
+## C. Quick Actions
+
+### Features
+
+* Catat cairan
+* Scan makanan
+* Scan minuman
+* Modul edukasi
+
+---
+
+## D. Ringkasan Hari Ini
+
+Menampilkan:
+
+* total intake
+* makanan hari ini
+* minuman hari ini
+* urine output
+
+---
+
+# API Requirements — Beranda
+
+## Endpoint
+
+```text id="p8xq7l"
+/api/dashboard/home/
+```
+
+---
+
+## Response
+
+```json id="3zjlwm"
+{
+  "patient_name": "Budi Santoso",
+  "fluid_limit_ml": 1200,
+  "fluid_intake_ml": 800,
+  "remaining_ml": 400,
+  "status": "aman",
+
+  "today_summary": [
+    {
+      "type": "drink",
+      "name": "Air Putih",
+      "amount": "200ml",
+      "time": "08:30"
+    },
+    {
+      "type": "food",
+      "name": "Nasi Putih",
+      "amount": "150g",
+      "time": "07:15"
+    }
+  ]
+}
+```
+
+---
+
+# 4.2 KALKULATOR CAIRAN
+
+## Tujuan
+
+Menghitung batas cairan harian pasien HD.
+
+---
+
+# Formula
+
+\mathrm{Daily\ Fluid\ Limit} = \mathrm{Urine\ Output} + 500\ \mathrm{ml}
+
+---
+
+# Input
+
+* berat badan kering
+* urine 24 jam
+
+---
+
+# API Endpoint
+
+```text id="w6md0n"
+/api/fluid/calculate/
+```
+
+---
+
+# Request
+
+```json id="lmz3kr"
+{
+  "dry_weight": 55,
+  "urine_output_ml": 700
+}
+```
+
+---
+
+# Response
+
+```json id="0m2c1n"
+{
+  "recommended_fluid_limit_ml": 1200,
+  "status": "aman"
+}
+```
+
+---
+
+# 4.3 SCAN MAKANAN & MINUMAN
+
+## Tujuan
+
+Mendeteksi makanan/minuman dan estimasi cairan otomatis.
+
+---
+
+# AI Flow
+
+```text id="8h2wbn"
+Upload Image
+      ↓
+AI Classification
+      ↓
+Nutrition CSV Lookup
+      ↓
+Fluid Estimation
+      ↓
+Save History
+```
+
+---
+
+# Features
+
+## Food Scan
+
+Output:
+
+* nama makanan
+* nutrisi
+* estimasi cairan
+* status HD
+
+---
+
+## Drink Scan
+
+Output:
+
+* nama minuman
+* estimasi volume ml
+
+---
+
+# API Endpoint
+
+```text id="o3f7d6"
+/api/scan/food-drink/
+```
+
+---
+
+# Request
+
+```text id="af2qk3"
+multipart/form-data
+```
+
+Field:
+
+* image
+* patient_id
+
+---
+
+# Response
+
+```json id="5s7vfx"
+{
+  "prediction": "Bakso",
+  "confidence": 0.93,
+
+  "nutrition": {
+    "calories": 320,
+    "protein": 18,
+    "sodium": 650,
+    "potassium": 420
+  },
+
+  "estimated_fluid_ml": 250,
+
+  "hd_status": "batasi"
+}
+```
+
+---
+
+# 4.4 NUTRISI PAGE
+
+## Tujuan
+
+Memberikan informasi makanan/minuman aman untuk pasien HD.
+
+---
+
+# Features
+
+## Food List
+
+Menampilkan:
+
+* gambar
+* nama makanan
+* sodium
+* potassium
+* fosfor
+* status HD
+
+---
+
+# Status HD
+
+| Status  | Meaning                 |
+| ------- | ----------------------- |
+| Aman    | rendah sodium/potassium |
+| Batasi  | sedang                  |
+| Hindari | tinggi                  |
+
+---
+
+# API Endpoint
+
+```text id="99a5tr"
+/api/nutrition/foods/
+```
+
+---
+
+# Response
+
+```json id="30d1zz"
+[
+  {
+    "id": 1,
+    "name": "Pisang Ambon",
+    "image": "banana.jpg",
+
+    "potassium": 435,
+    "phosphorus": 22,
+    "sodium": 1,
+
+    "status": "hindari",
+
+    "description": "Sangat tinggi kalium"
+  }
+]
+```
+
+---
+
+# 4.5 MODUL EDUKASI
+
+## Features
+
+* edukasi HD
+* pembatasan cairan
+* diet HD
+* makanan yang harus dihindari
+
+---
+
+# API Endpoint
+
+```text id="3lqv7y"
+/api/education/modules/
+```
+
+---
+
+# Response
+
+```json id="v53nqa"
+[
+  {
+    "title": "Apa itu Hemodialisis",
+    "thumbnail": "hd.jpg",
+    "content": "..."
+  }
+]
+```
+
+---
+
+# 4.6 RIWAYAT
+
+## Tujuan
+
+Melihat histori aktivitas harian pasien.
+
+---
+
+# Activity Types
+
+* scan makanan
+* scan minuman
+* intake cairan
+* urine scan
+
+---
+
+# API Endpoint
+
+```text id="jlwm2n"
+/api/history/
+```
+
+---
+
+# Response
+
+```json id="az5sgv"
+[
+  {
+    "type": "drink",
+    "name": "Air Putih",
+    "amount": "200ml",
+    "time": "08:30"
+  },
+
+  {
+    "type": "food",
+    "name": "Bakso",
+    "estimated_fluid": "250ml",
+    "time": "12:00"
+  }
+]
+```
+
+---
+
+# 4.7 AKUN
+
+## Features
+
+* detail profil
+* edit profil
+* logout
+
+---
+
+# API Endpoint
+
+## Profile
+
+```text id="4td2tq"
+/api/profile/
+```
+
+---
+
+## Update Profile
+
+```text id="gw4k7s"
+/api/profile/update/
+```
+
+---
+
+## Logout
+
+```text id="e9uxxm"
+/api/logout/
+```
+
+---
+
+# 5. URINE SCAN AI
+
+## Objective
+
+Mengestimasi volume urine dari gambar botol.
+
+---
+
+# Flow
+
+```text id="rf5yjr"
+Upload Urine Bottle Image
+        ↓
+AI Detection
+        ↓
+Volume Estimation
+        ↓
+Save Result
+```
+
+---
+
+# API Endpoint
+
+```text id="l4fdrx"
+/api/scan/urine/
+```
+
+---
+
+# Request
+
+```text id="hzqf93"
+multipart/form-data
+```
+
+Field:
+
+* image
+* patient_id
+
+---
+
+# Response
+
+```json id="n2iv4i"
+{
+  "estimated_volume_ml": 650,
+  "confidence": 0.91
+}
+```
+
+---
+
+# 6. Authentication System
+
+# Features
+
+* register
+* login
+* JWT authentication
+* logout
+
+---
+
+# API Endpoints
+
+## Register
+
+```text id="tl8t66"
+/api/auth/register/
+```
+
+---
+
+## Login
+
+```text id="7ig6ri"
+/api/auth/login/
+```
+
+---
+
+## Refresh Token
+
+```text id="uyh0vq"
+/api/auth/refresh/
+```
+
+---
+
+# Login Response
+
+```json id="d9w8px"
+{
+  "access_token": "jwt_access",
+  "refresh_token": "jwt_refresh",
+
+  "user": {
+    "id": 1,
+    "name": "Budi Santoso"
+  }
+}
+```
+
+---
+
+# 7. AI Architecture
+
+## Food AI
+
+### Model
+
+* MobileNetV2
+* TensorFlow Lite
+
+---
+
+# Dataset
+
+* food images
+* nutrition CSV
+
+---
+
+# Output
+
+* food classification
+* fluid estimation
+* HD nutrition status
+
+---
+
+# Urine AI
+
+## Methods
+
+* CNN classification
+* OpenCV liquid level estimation
+
+---
+
+# Output
+
+* urine volume ml
+
+---
+
+# 8. Database Entities
+
+# User
+
+```text id="z4q8ku"
+id
+name
+email
+password
+role
+```
+
+---
+
+# Patient
+
+```text id="x2g37o"
+id
+user_id
+dry_weight
+fluid_limit_ml
+urine_output_ml
+```
+
+---
+
+# FoodHistory
+
+```text id="35w3hz"
+id
+patient_id
+food_name
+estimated_fluid_ml
+nutrition_data
+image
+created_at
+```
+
+---
+
+# UrineHistory
+
+```text id="v4e4wz"
+id
+patient_id
+volume_ml
+image
+created_at
+```
+
+---
+
+# 9. Recommended Backend Stack
+
+## Backend
+
+* Django
+* Django REST Framework
+
+---
+
+## AI
+
+* TensorFlow
+* OpenCV
+* Pandas
+* NumPy
+
+---
+
+## Database
+
+* PostgreSQL
+
+---
+
+## Storage
+
+* Local storage MVP
+* AWS S3 future
+
+---
+
+# 10. Security
+
+## Requirements
+
+* JWT authentication
+* secure file upload
+* image validation
+* API rate limiting
+
+---
+
+# 11. Performance Targets
+
+| Feature      | Target  |
+| ------------ | ------- |
+| API Response | < 2 sec |
+| AI Inference | < 5 sec |
+| Mobile Load  | < 3 sec |
+
+---
+
+# 12. MVP Priority
+
+# Priority 1
+
+* authentication
+* dashboard API
+* scan food/drink
+* fluid calculator
+* history API
+
+---
+
+# Priority 2
+
+* urine scan AI
+* education modules
+* nutrition search
+
+---
+
+# Priority 3
+
+* realtime monitoring
+* Gemini Vision fallback
+* recommendation engine
+
+---
+
+# 13. Future Enhancements
+
+## AI Improvements
+
+* multi-food detection
+* segmentation AI
+* realtime camera detection
+
+---
+
+## Healthcare Features
+
+* doctor dashboard
+* nurse dashboard
+* dialysis schedule
+* push notification
+
+---
+
+# 14. Final Vision
+
+HD Care bertujuan menjadi platform AI healthcare yang membantu pasien Hemodialysis memonitor:
+
+* cairan
+* nutrisi
+* urine output
+* pola makan
+* kesehatan harian
+
+secara otomatis, realtime, dan mudah digunakan.
