@@ -220,6 +220,8 @@ class FoodDrinkScanAPIView(APIView):
             'nutrition': result['nutrition'],
             'estimated_fluid_ml': result['estimated_fluid_ml'],
             'hd_status': result['hd_status'],
+            'scan_type': result['scan_type'],
+            'is_recognized': result.get('is_recognized', True),
             'history_id': history.id,
         })
 
@@ -257,7 +259,16 @@ class UrineScanAPIView(APIView):
             volume_ml=result['estimated_volume_ml'],
             source='scan',
         )
-        return Response(result)
+        return Response({
+            'estimated_volume_ml': result['estimated_volume_ml'],
+            'confidence': result['confidence'],
+            'display_name': result.get('display_name', ''),
+            'class_name': result.get('class_name', ''),
+            'min_ml': result.get('min_ml', 0),
+            'max_ml': result.get('max_ml', 0),
+            'top3': result.get('top3', []),
+            'is_recognized': result.get('is_recognized', False),
+        })
 
 
 class NutritionFoodsAPIView(APIView):

@@ -1,0 +1,86 @@
+{
+    "0": {
+        "folder_name": "0_100ml",
+        "display_name": "0 - 100 ml",
+        "min_ml": 0,
+        "max_ml": 100,
+        "estimated_ml": 50
+    },
+    "1": {
+        "folder_name": "1001_1100ml",
+        "display_name": "1001 - 1100 ml",
+        "min_ml": 1001,
+        "max_ml": 1100,
+        "estimated_ml": 1050
+    },
+    "2": {
+        "folder_name": "101_200ml",
+        "display_name": "101 - 200 ml",
+        "min_ml": 101,
+        "max_ml": 200,
+        "estimated_ml": 150
+    },
+    "3": {
+        "folder_name": "1101_1200ml",
+        "display_name": "1101 - 1200 ml",
+        "min_ml": 1101,
+        "max_ml": 1200,
+        "estimated_ml": 1150
+    },
+    "4": {
+        "folder_name": "201_300ml",
+        "display_name": "201 - 300 ml",
+        "min_ml": 201,
+        "max_ml": 300,
+        "estimated_ml": 250
+    },
+    "5": {
+        "folder_name": "301_400ml",
+        "display_name": "301 - 400 ml",
+        "min_ml": 301,
+        "max_ml": 400,
+        "estimated_ml": 350
+    },
+    "6": {
+        "folder_name": "401_500ml",
+        "display_name": "401 - 500 ml",
+        "min_ml": 401,
+        "max_ml": 500,
+        "estimated_ml": 450
+    },
+    "7": {
+        "folder_name": "501_600ml",
+        "display_name": "501 - 600 ml",
+        "min_ml": 501,
+        "max_ml": 600,
+        "estimated_ml": 550
+    },
+    "8": {
+        "folder_name": "601_700ml",
+        "display_name": "601 - 700 ml",
+        "min_ml": 601,
+        "max_ml": 700,
+        "estimated_ml": 650
+    },
+    "9": {
+        "folder_name": "701_800ml",
+        "display_name": "701 - 800 ml",
+        "min_ml": 701,
+        "max_ml": 800,
+        "estimated_ml": 750
+    },
+    "10": {
+        "folder_name": "801_900ml",
+        "display_name": "801 - 900 ml",
+        "min_ml": 801,
+        "max_ml": 900,
+        "estimated_ml": 850
+    },
+    "11": {
+        "folder_name": "901_1000ml",
+        "display_name": "901 - 1000 ml",
+        "min_ml": 901,
+        "max_ml": 1000,
+        "estimated_ml": 950
+    }
+}
