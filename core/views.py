@@ -102,6 +102,15 @@ def patient_list(request):
 @login_required(login_url='login')
 def patient_detail(request, pk):
     patient = get_object_or_404(Patient, pk=pk, is_active=True)
+    
+    if request.method == 'POST':
+        new_bed = request.POST.get('bed')
+        if new_bed is not None:
+            patient.bed = new_bed.strip()
+            patient.save(update_fields=['bed'])
+            messages.success(request, 'Bed number updated successfully.')
+            return redirect('patient_detail', pk=pk)
+
     latest_vital = patient.vitals.first()
     fluid_logs = patient.fluid_logs.all()[:20]
     trend_logs = (
