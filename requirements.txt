@@ -1,10 +1,8 @@
-tensorflow
-opencv-python
-numpy
-pandas
-scikit-learn
-pillow
-django
+Django
 djangorestframework
 djangorestframework-simplejwt
 Pillow
+pandas
+numpy
+tensorflow
+ultralytics
