@@ -1,0 +1,7 @@
+tensorflow>=2.12
+pillow
+numpy
+opencv-python
+albumentations
+tqdm
+flask

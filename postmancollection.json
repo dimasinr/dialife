@@ -1,0 +1,434 @@
+{
+	"info": {
+		"_postman_id": "b3e944bc-dc19-459f-9f79-6b83f3e1f579",
+		"name": "DIALIFE Mobile API",
+		"description": "Dokumentasi endpoint API untuk aplikasi mobile DIALIFE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"johndoe\",\n  \"password\": \"password123\",\n  \"patient_code\": \"PT-1234\",\n  \"full_name\": \"John Doe\",\n  \"age\": 35\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register", ""]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "{\n  \"access_token\": \"eyJ0eXAiOiJKV1QiLC...\",\n  \"refresh_token\": \"eyJ0eXAiOiJKV1QiLC...\",\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"John Doe\"\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"johndoe\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login", ""]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "{\n  \"access_token\": \"eyJ0eXAiOiJKV1QiLC...\",\n  \"refresh_token\": \"eyJ0eXAiOiJKV1QiLC...\",\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"John Doe\"\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refresh\": \"<your_refresh_token_here>\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/refresh/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "refresh", ""]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "{\n  \"access_token\": \"eyJ0eXAiOiJKV1QiLC...\",\n  \"refresh_token\": \"eyJ0eXAiOiJKV1QiLC...\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refresh_token\": \"<your_refresh_token_here>\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/logout/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "logout", ""]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "{\n  \"message\": \"Logged out successfully.\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{access_token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/profile/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "profile", ""]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "{\n  \"id\": 1,\n  \"patient_code\": \"PT-1234\",\n  \"full_name\": \"John Doe\",\n  \"age\": 35,\n  \"bed\": \"A1\",\n  \"ward\": \"Ward 4B\",\n  \"blood_type\": \"O+\",\n  \"diagnosis\": \"CKD Stage 5\",\n  \"dry_weight_kg\": 68.0,\n  \"daily_fluid_limit_ml\": 1000,\n  \"fluid_intake_today_ml\": 300,\n  \"urine_output_24h_ml\": 500,\n  \"status\": \"stable\",\n  \"photo_url\": \"\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{access_token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"age\": 36,\n  \"dry_weight_kg\": 68.5\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/profile/update/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "profile", "update", ""]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "{\n  \"id\": 1,\n  \"patient_code\": \"PT-1234\",\n  \"full_name\": \"John Doe\",\n  \"age\": 36,\n  \"dry_weight_kg\": 68.5,\n  \"daily_fluid_limit_ml\": 1000\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Dashboard & Fluid",
+			"item": [
+				{
+					"name": "Dashboard Home",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{access_token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/home/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "home", ""]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "{\n  \"patient_name\": \"John Doe\",\n  \"fluid_limit_ml\": 1000,\n  \"fluid_intake_ml\": 450,\n  \"remaining_ml\": 550,\n  \"status\": \"aman\",\n  \"totals\": {\n    \"food_ml\": 200,\n    \"drink_ml\": 250,\n    \"urine_output_ml\": 500\n  },\n  \"today_summary\": [\n    {\n      \"time\": \"08:00\",\n      \"title\": \"Air Putih\",\n      \"subtitle\": \"250 ml (drink)\",\n      \"type\": \"drink\",\n      \"amount_ml\": 250\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Calculate Fluid Limit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"urine_output_24h_ml\": 500\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/fluid/calculate/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "fluid", "calculate", ""]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "{\n  \"recommended_fluid_limit_ml\": 1000,\n  \"status\": \"aman\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Manual Fluid Intake",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{access_token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"drink\",\n  \"name\": \"Air Mineral\",\n  \"volume_ml\": 250\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/fluid/intake/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "fluid", "intake", ""]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "{\n  \"type\": \"drink\",\n  \"name\": \"Air Mineral\",\n  \"amount\": \"250ml\",\n  \"time\": \"14:30\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{access_token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/history/?date=2024-01-01",
+							"host": ["{{base_url}}"],
+							"path": ["api", "history", ""],
+							"query": [
+								{ "key": "date", "value": "2024-01-01" }
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "[\n  {\n    \"id\": 101,\n    \"time\": \"14:30\",\n    \"title\": \"Soto Ayam\",\n    \"subtitle\": \"300 ml (food) - Scan AI\",\n    \"type\": \"food\",\n    \"amount_ml\": 300,\n    \"source\": \"scan\"\n  },\n  {\n    \"id\": 102,\n    \"time\": \"08:00\",\n    \"title\": \"Urine Output\",\n    \"subtitle\": \"500 ml - Scan AI\",\n    \"type\": \"urine\",\n    \"amount_ml\": 500,\n    \"source\": \"scan\"\n  }\n]"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "AI Scanners",
+			"item": [
+				{
+					"name": "Scan Food & Drink",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{access_token}}" }
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": ""
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/scan/food-drink/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "scan", "food-drink", ""]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "{\n  \"prediction\": \"Bakso\",\n  \"confidence\": 0.945,\n  \"nutrition\": {\n    \"calories\": 320,\n    \"protein\": 18.0,\n    \"sodium\": 650,\n    \"potassium\": 420,\n    \"phosphorus\": 180\n  },\n  \"estimated_fluid_ml\": 250,\n  \"hd_status\": \"batasi\",\n  \"scan_type\": \"food\",\n  \"is_recognized\": true,\n  \"history_id\": 45\n}"
+						}
+					]
+				},
+				{
+					"name": "Scan Urine Volume",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{access_token}}" }
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": ""
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/scan/urine/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "scan", "urine", ""]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "{\n  \"estimated_volume_ml\": 550,\n  \"confidence\": 0.89,\n  \"display_name\": \"501 - 600 ml\",\n  \"class_name\": \"501_600ml\",\n  \"min_ml\": 501,\n  \"max_ml\": 600,\n  \"top3\": [\n    {\n      \"class_name\": \"501_600ml\",\n      \"estimated_ml\": 550,\n      \"confidence\": 0.89\n    }\n  ],\n  \"is_recognized\": true\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Content",
+			"item": [
+				{
+					"name": "Get Nutrition/Foods",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/nutrition/foods/?q=Nasi&status=aman",
+							"host": ["{{base_url}}"],
+							"path": ["api", "nutrition", "foods", ""],
+							"query": [
+								{ "key": "q", "value": "Nasi", "description": "Search query" },
+								{ "key": "status", "value": "aman", "description": "HD Status (aman/batasi/hindari)" }
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Nasi Putih\",\n    \"calories\": 204,\n    \"protein\": 4.0,\n    \"sodium\": 2,\n    \"potassium\": 35,\n    \"phosphorus\": 33,\n    \"estimated_fluid_ml\": 150,\n    \"hd_status\": \"aman\",\n    \"description\": \"Nasi putih biasa\",\n    \"image_url\": \"\"\n  }\n]"
+						}
+					]
+				},
+				{
+					"name": "Get Education Modules",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/education/modules/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "education", "modules", ""]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "[\n  {\n    \"id\": 1,\n    \"title\": \"Pentingnya Pembatasan Cairan\",\n    \"content\": \"Bagi pasien cuci darah, membatasi cairan...\",\n    \"thumbnail_url\": \"\",\n    \"sort_order\": 1\n  }\n]"
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000"
+		},
+		{
+			"key": "access_token",
+			"value": "your_access_token_here"
+		}
+	]
+}
