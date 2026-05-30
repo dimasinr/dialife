@@ -16,7 +16,15 @@
         <span>{{ patient.age }} Years Old</span>
         {% if patient.blood_type %}<span>{{ patient.blood_type }}</span>{% endif %}
         {% if patient.diagnosis %}<span class="text-primary font-bold">{{ patient.diagnosis }}</span>{% endif %}
-        <span>Bed {{ patient.bed|default:"—" }} • {{ patient.ward }}</span>
+        <span class="flex items-center gap-2">
+          <form method="post" class="flex items-center gap-2">
+            {% csrf_token %}
+            <label for="bed" class="font-bold">Bed</label>
+            <input type="text" name="bed" id="bed" value="{{ patient.bed|default:'' }}" class="bg-surface-container-high border-none rounded px-2 py-1 text-sm w-20 focus:ring-1 focus:ring-primary">
+            <button type="submit" class="text-primary hover:text-primary-container"><span class="material-symbols-outlined" style="font-size: 18px;">save</span></button>
+          </form>
+          • {{ patient.ward }}
+        </span>
       </div>
     </div>
   </div>
@@ -50,7 +58,7 @@
       </div>
       <div class="p-4 bg-surface-container-low rounded-lg border border-outline-variant/30">
         <p class="font-label-md text-on-surface-variant mb-2">Temperature</p>
-        <p class="font-headline-md">{% if vital %}{{ vital.temperature_c }}{% else %}36.7{% endif %} <span class="text-body-md">°C</span></p>
+        <p class="font-headline-md">{% if vital %}{{ vital.temperature_c }} <span class="text-body-md">°C</span>{% else %}<span class="text-body-md text-on-surface-variant">—</span>{% endif %}</p>
       </div>
     </div>
   </div>
