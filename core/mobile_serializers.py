@@ -88,7 +88,7 @@ class ProfileSerializer(serializers.Serializer):
         decimal_places=1,
     )
     fluid_limit_ml = serializers.IntegerField(source='daily_fluid_limit_ml')
-    urine_output_ml = serializers.IntegerField()
+    urine_output_ml = serializers.IntegerField(source='urine_output_24h_ml')
     patient_id = serializers.IntegerField(source='id')
 
     def get_name(self, obj):
