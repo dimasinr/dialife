@@ -6,8 +6,7 @@ pandas
 numpy
 tensorflow
 ultralytics
-gunicorn 
+gunicorn
 django-import-export
-pandas
 openpyxl
 opencv-python-headless
