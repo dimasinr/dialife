@@ -43,4 +43,4 @@ COPY . .
 EXPOSE 8000
 
 # Run using gunicorn, dynamically binding to the port provided by Railway ($PORT)
-CMD ["sh", "-c", "gunicorn dialife.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 2 --timeout 300"]
+CMD ["sh", "-c", "gunicorn dialife.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 1 --threads 2 --timeout 300"]
