@@ -40,7 +40,10 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Expose port (Railway will override this automatically, but good to have)
+# Disable TensorFlow oneDNN and set CPU variables to avoid SIGSEGV in restricted VMs
+ENV TF_ENABLE_ONEDNN_OPTS=0
+
 EXPOSE 8000
 
-# Run using gunicorn, dynamically binding to the port provided by Railway ($PORT)
-CMD ["sh", "-c", "gunicorn dialife.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 1 --threads 2 --timeout 300"]
+# Run using a single sync worker to prevent C-level thread conflicts in OpenCV/TF/YOLO
+CMD ["sh", "-c", "gunicorn dialife.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 1 --timeout 300"]
