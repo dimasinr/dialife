@@ -92,6 +92,16 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'if0_42061428_dialife',
+#         'USER': 'if0_42061428',
+#         'PASSWORD': 'LeF9gvWDVtQlLQK',
+#         'HOST': 'sql204.infinityfree.com',
+#         'PORT': '3306',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
