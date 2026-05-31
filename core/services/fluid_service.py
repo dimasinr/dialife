@@ -3,7 +3,7 @@
 from django.db import models
 from django.utils import timezone
 
-from core.models import FluidCategory, FluidLog, FoodScanHistory, Patient
+from core.models import FluidCategory, FluidLog, Patient
 
 
 def calculate_fluid_limit_ml(urine_output_ml: int, buffer_ml: int = 500) -> int:
@@ -32,8 +32,13 @@ def fluid_status_from_calculator(urine_output_ml: int, dry_weight: float | None 
 
 
 def today_intake_ml(patient: Patient) -> int:
+    """Sum of drink + food FluidLog entries for today.
+
+    Note: scans already create FluidLog entries (via mobile_api.py),
+    so we only query FluidLog to avoid double-counting.
+    """
     today = timezone.localdate()
-    log_sum = (
+    return int(
         FluidLog.objects.filter(
             patient=patient,
             logged_at__date=today,
@@ -41,14 +46,19 @@ def today_intake_ml(patient: Patient) -> int:
         ).aggregate(total=models.Sum('volume_ml'))['total']
         or 0
     )
-    scan_sum = (
-        FoodScanHistory.objects.filter(
+
+
+def today_urine_ml(patient: Patient) -> int:
+    """Sum of urine FluidLog entries for today (accumulated output)."""
+    today = timezone.localdate()
+    return int(
+        FluidLog.objects.filter(
             patient=patient,
-            created_at__date=today,
-        ).aggregate(total=models.Sum('estimated_fluid_ml'))['total']
+            logged_at__date=today,
+            category=FluidCategory.URINE,
+        ).aggregate(total=models.Sum('volume_ml'))['total']
         or 0
     )
-    return int(log_sum + scan_sum)
 
 
 def today_food_ml(patient: Patient) -> int:
@@ -64,8 +74,13 @@ def today_food_ml(patient: Patient) -> int:
 
 
 def today_drink_ml(patient: Patient) -> int:
+    """Sum of drink FluidLog entries for today.
+
+    Note: scans already create FluidLog entries, so no need to query
+    FoodScanHistory separately.
+    """
     today = timezone.localdate()
-    drink_logs = (
+    return int(
         FluidLog.objects.filter(
             patient=patient,
             logged_at__date=today,
@@ -73,12 +88,3 @@ def today_drink_ml(patient: Patient) -> int:
         ).aggregate(total=models.Sum('volume_ml'))['total']
         or 0
     )
-    drink_scans = (
-        FoodScanHistory.objects.filter(
-            patient=patient,
-            created_at__date=today,
-            scan_type='drink',
-        ).aggregate(total=models.Sum('estimated_fluid_ml'))['total']
-        or 0
-    )
-    return int(drink_logs + drink_scans)
