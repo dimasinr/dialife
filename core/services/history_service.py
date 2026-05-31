@@ -28,7 +28,7 @@ def build_history_entries(patient, date=None, limit=50) -> list[dict]:
             item['amount'] = f'{scan.estimated_fluid_ml}ml'
         entries.append((scan.created_at, item))
 
-    for log in FluidLog.objects.filter(patient=patient, logged_at__date=target_date):
+    for log in FluidLog.objects.filter(patient=patient, logged_at__date=target_date).exclude(source='scan'):
         item = {
             'type': log.category,
             'name': log.description,
