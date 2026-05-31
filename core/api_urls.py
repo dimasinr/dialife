@@ -17,6 +17,7 @@ from .mobile_api import (
     RegisterAPIView,
     TokenRefreshAPIView,
     UrineScanAPIView,
+    UrineOutputAPIView,
 )
 
 urlpatterns = [
@@ -33,6 +34,7 @@ urlpatterns = [
     # §4.2 Kalkulator
     path('fluid/calculate/', FluidCalculateAPIView.as_view(), name='api-fluid-calculate'),
     path('fluid/intake/', FluidIntakeAPIView.as_view(), name='api-fluid-intake'),
+    path('fluid/urine/', UrineOutputAPIView.as_view(), name='api-fluid-urine'),
     # §4.3 Scan & manual input
     path('scan/food-drink/', FoodDrinkScanAPIView.as_view(), name='api-scan-food-drink'),
     path('food/manual/', ManualFoodInputAPIView.as_view(), name='api-food-manual'),

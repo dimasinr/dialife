@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from .models import Alert, AlertSeverity, FluidLog, Patient, PatientStatus, VitalReading
+from .services.fluid_service import today_intake_ml, today_urine_ml
 
 
 def _nurse_context(request):
@@ -84,12 +85,17 @@ def patient_list(request):
             | Q(bed__icontains=q)
         )
 
+    # Sync fluid intake for each patient so progress bars are accurate
+    patients = list(qs)
+    for p in patients:
+        p.sync_fluid_intake_today()
+
     wards = Patient.objects.values_list('ward', flat=True).distinct().order_by('ward')
     context = {
         **_nurse_context(request),
         'nav_active': 'patients',
         'page_title': 'Patient Monitoring Overview',
-        'patients': qs,
+        'patients': patients,
         'total_patients': Patient.objects.filter(is_active=True).count(),
         'critical_count': Patient.objects.filter(
             is_active=True,
@@ -115,6 +121,18 @@ def patient_detail(request, pk):
             messages.success(request, 'Bed number updated successfully.')
             return redirect('patient_detail', pk=pk)
 
+    # Sync fluid intake from FluidLog (recalculates from DB)
+    patient.sync_fluid_intake_today()
+
+    # Calculate today's values from service functions
+    intake = today_intake_ml(patient)
+    urine_output = today_urine_ml(patient)
+
+    # Sync urine output to patient record
+    if urine_output > 0 and patient.urine_output_24h_ml != urine_output:
+        patient.urine_output_24h_ml = urine_output
+        patient.save(update_fields=['urine_output_24h_ml', 'updated_at'])
+
     latest_vital = patient.vitals.first()
     fluid_logs = patient.fluid_logs.all()[:20]
     trend_logs = (
@@ -122,20 +140,6 @@ def patient_detail(request, pk):
         .order_by('-logged_at')[:7]
     )
     active_alert = patient.alerts.filter(is_resolved=False).first()
-    intake_today = sum(
-        log.volume_ml
-        for log in patient.fluid_logs.filter(
-            category__in=['drink', 'food'],
-            logged_at__date=timezone.localdate(),
-        )
-    )
-    output_today = sum(
-        log.volume_ml
-        for log in patient.fluid_logs.filter(
-            category='urine',
-            logged_at__date=timezone.localdate(),
-        )
-    )
     context = {
         **_nurse_context(request),
         'nav_active': 'patients',
@@ -145,8 +149,8 @@ def patient_detail(request, pk):
         'fluid_logs': fluid_logs,
         'trend_logs': trend_logs,
         'active_alert': active_alert,
-        'intake_today': intake_today or patient.fluid_intake_today_ml,
-        'output_today': output_today,
+        'intake_today': intake,
+        'output_today': urine_output,
         'fluid_percent': patient.fluid_percent,
     }
     return render(request, 'monitoring_patiens/detail_patiens.html', context)

@@ -35,6 +35,7 @@ from .services.fluid_service import (
     today_drink_ml,
     today_food_ml,
     today_intake_ml,
+    today_urine_ml,
 )
 from .services.food_intake_service import record_manual_food_items
 from .services.history_service import build_history_entries
@@ -161,7 +162,7 @@ class DashboardHomeAPIView(APIView):
             'totals': {
                 'food_ml': today_food_ml(patient),
                 'drink_ml': today_drink_ml(patient),
-                'urine_output_ml': patient.urine_output_24h_ml,
+                'urine_output_ml': today_urine_ml(patient),
             },
         })
 
@@ -247,19 +248,21 @@ class UrineScanAPIView(APIView):
             confidence=result['confidence'],
             image=image,
         )
-        patient.urine_output_24h_ml = result['estimated_volume_ml']
-        patient.daily_fluid_limit_ml = calculate_fluid_limit_ml(
-            result['estimated_volume_ml'],
-        )
-        patient.save(
-            update_fields=['urine_output_24h_ml', 'daily_fluid_limit_ml', 'updated_at'],
-        )
         FluidLog.objects.create(
             patient=patient,
             category=FluidCategory.URINE,
             description='Urine scan (AI)',
             volume_ml=result['estimated_volume_ml'],
             source='scan',
+        )
+        # Accumulate today's urine output (not overwrite)
+        total_urine_today = today_urine_ml(patient)
+        patient.urine_output_24h_ml = total_urine_today
+        patient.daily_fluid_limit_ml = calculate_fluid_limit_ml(
+            total_urine_today,
+        )
+        patient.save(
+            update_fields=['urine_output_24h_ml', 'daily_fluid_limit_ml', 'updated_at'],
         )
         return Response({
             'estimated_volume_ml': result['estimated_volume_ml'],
@@ -372,3 +375,45 @@ class HistoryAPIView(APIView):
             except ValueError:
                 raise ValidationError({'date': 'Use YYYY-MM-DD format.'})
         return Response(build_history_entries(patient, date=target_date))
+
+
+class UrineOutputAPIView(APIView):
+    """Manual urine output — input volume tanpa scan gambar."""
+
+    def post(self, request):
+        patient = get_patient(request.user)
+        try:
+            volume_ml = int(request.data.get('volume_ml', 0))
+        except (TypeError, ValueError):
+            raise ValidationError({'volume_ml': 'Valid integer required.'})
+        if volume_ml <= 0:
+            raise ValidationError({'volume_ml': 'Must be greater than zero.'})
+
+        log = FluidLog.objects.create(
+            patient=patient,
+            category=FluidCategory.URINE,
+            description=request.data.get('description', 'Manual urine entry').strip() or 'Manual urine entry',
+            volume_ml=volume_ml,
+            source='mobile',
+        )
+
+        # Accumulate today's urine output
+        total_urine_today = today_urine_ml(patient)
+        patient.urine_output_24h_ml = total_urine_today
+        patient.daily_fluid_limit_ml = calculate_fluid_limit_ml(
+            total_urine_today,
+        )
+        patient.save(
+            update_fields=['urine_output_24h_ml', 'daily_fluid_limit_ml', 'updated_at'],
+        )
+
+        return Response(
+            {
+                'volume_ml': volume_ml,
+                'total_urine_today_ml': total_urine_today,
+                'new_fluid_limit_ml': patient.daily_fluid_limit_ml,
+                'time': timezone.localtime(log.logged_at).strftime('%H:%M'),
+            },
+            status=status.HTTP_201_CREATED,
+        )
+

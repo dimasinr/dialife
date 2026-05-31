@@ -34,14 +34,26 @@
 <div class="bento-grid">
   <div class="col-span-12 lg:col-span-4 bg-white border border-outline-variant rounded-xl p-6">
     <h3 class="font-headline-sm border-b border-outline-variant pb-4 mb-4">Today's Fluid Balance</h3>
-    <div class="text-center py-6">
-      <span class="text-4xl font-bold">{{ patient.fluid_intake_today_ml }}</span>
-      <span class="text-on-surface-variant"> / {{ patient.daily_fluid_limit_ml }} ml</span>
-      <p class="mt-2 text-label-md text-on-surface-variant">{{ fluid_percent }}% of daily limit</p>
+    <div class="flex justify-center py-4">
+      <div style="position:relative; width:200px; height:200px;">
+        <canvas id="fluidDonutChart"></canvas>
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; pointer-events:none;">
+          <span class="text-3xl font-bold" id="fluidCenterValue">{{ intake_today }}</span>
+          <br>
+          <span class="text-on-surface-variant text-xs">/ {{ patient.daily_fluid_limit_ml }} ml</span>
+        </div>
+      </div>
     </div>
+    <p class="text-center text-label-md text-on-surface-variant mb-4">{{ fluid_percent }}% of daily limit</p>
     <div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant text-center">
-      <div><p class="text-xs uppercase text-on-surface-variant">Intake</p><p class="text-lg font-bold text-secondary">{{ intake_today }}ml</p></div>
-      <div><p class="text-xs uppercase text-on-surface-variant">Output</p><p class="text-lg font-bold text-primary">{{ output_today }}ml</p></div>
+      <div>
+        <p class="text-xs uppercase text-on-surface-variant">Intake</p>
+        <p class="text-lg font-bold text-secondary">{{ intake_today }}ml</p>
+      </div>
+      <div>
+        <p class="text-xs uppercase text-on-surface-variant">Output</p>
+        <p class="text-lg font-bold text-primary">{{ output_today }}ml</p>
+      </div>
     </div>
   </div>
 
@@ -103,3 +115,65 @@
 </div>
 {% endif %}
 {% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+  const intake = {{ intake_today }};
+  const limit  = {{ patient.daily_fluid_limit_ml }};
+  const output = {{ output_today }};
+  const remaining = Math.max(0, limit - intake);
+  const pct = limit > 0 ? Math.round((intake / limit) * 100) : 0;
+
+  // Determine color based on percentage
+  let intakeColor, remainColor;
+  if (pct >= 100) {
+    intakeColor = '#B3261E';      // error / critical red
+    remainColor = 'rgba(179,38,30,0.12)';
+  } else if (pct >= 85) {
+    intakeColor = '#E8A317';      // warning amber
+    remainColor = 'rgba(232,163,23,0.12)';
+  } else {
+    intakeColor = '#006D40';      // safe green (primary)
+    remainColor = 'rgba(0,109,64,0.10)';
+  }
+
+  const ctx = document.getElementById('fluidDonutChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Intake', 'Remaining'],
+      datasets: [{
+        data: [intake, remaining],
+        backgroundColor: [intakeColor, remainColor],
+        borderWidth: 0,
+        borderRadius: 6,
+        spacing: 2,
+      }]
+    },
+    options: {
+      cutout: '72%',
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              return ctx.label + ': ' + ctx.parsed + ' ml';
+            }
+          }
+        }
+      },
+      animation: {
+        animateRotate: true,
+        duration: 900,
+        easing: 'easeOutQuart',
+      }
+    }
+  });
+})();
+</script>
+{% endblock %}
+
