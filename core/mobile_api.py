@@ -233,47 +233,50 @@ class UrineScanAPIView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
-        image = request.FILES.get('image')
-        if not image:
-            raise ValidationError({'image': 'Image file is required.'})
-        patient = resolve_patient(request.user, request.data.get('patient_id'))
         try:
-            result = scan_urine_volume(image)
-        except ValueError as exc:
-            raise ValidationError({'image': str(exc)}) from exc
+            image = request.FILES.get('image')
+            if not image:
+                raise ValidationError({'image': 'Image file is required.'})
+            patient = resolve_patient(request.user, request.data.get('patient_id'))
+            try:
+                result = scan_urine_volume(image)
+            except ValueError as exc:
+                raise ValidationError({'image': str(exc)}) from exc
 
-        UrineScanHistory.objects.create(
-            patient=patient,
-            volume_ml=result['estimated_volume_ml'],
-            confidence=result['confidence'],
-            image=image,
-        )
-        FluidLog.objects.create(
-            patient=patient,
-            category=FluidCategory.URINE,
-            description='Urine scan (AI)',
-            volume_ml=result['estimated_volume_ml'],
-            source='scan',
-        )
-        # Accumulate today's urine output (not overwrite)
-        total_urine_today = today_urine_ml(patient)
-        patient.urine_output_24h_ml = total_urine_today
-        patient.daily_fluid_limit_ml = calculate_fluid_limit_ml(
-            total_urine_today,
-        )
-        patient.save(
-            update_fields=['urine_output_24h_ml', 'daily_fluid_limit_ml', 'updated_at'],
-        )
-        return Response({
-            'estimated_volume_ml': result['estimated_volume_ml'],
-            'confidence': result['confidence'],
-            'display_name': result.get('display_name', ''),
-            'class_name': result.get('class_name', ''),
-            'min_ml': result.get('min_ml', 0),
-            'max_ml': result.get('max_ml', 0),
-            'top3': result.get('top3', []),
-            'is_recognized': result.get('is_recognized', False),
-        })
+            UrineScanHistory.objects.create(
+                patient=patient,
+                volume_ml=result['estimated_volume_ml'],
+                confidence=result['confidence'],
+                image=image,
+            )
+            FluidLog.objects.create(
+                patient=patient,
+                category=FluidCategory.URINE,
+                description='Urine scan (AI)',
+                volume_ml=result['estimated_volume_ml'],
+                source='scan',
+            )
+            # Accumulate today's urine output (not overwrite)
+            total_urine_today = today_urine_ml(patient)
+            patient.urine_output_24h_ml = total_urine_today
+            patient.daily_fluid_limit_ml = calculate_fluid_limit_ml(
+                total_urine_today,
+            )
+            patient.save(
+                update_fields=['urine_output_24h_ml', 'daily_fluid_limit_ml', 'updated_at'],
+            )
+            return Response({
+                'estimated_volume_ml': result['estimated_volume_ml'],
+                'confidence': result['confidence'],
+                'display_name': result.get('display_name', ''),
+                'class_name': result.get('class_name', ''),
+                'min_ml': result.get('min_ml', 0),
+                'max_ml': result.get('max_ml', 0),
+                'top3': result.get('top3', []),
+                'is_recognized': result.get('is_recognized', False),
+            })
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class NutritionFoodsAPIView(APIView):

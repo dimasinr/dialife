@@ -32,8 +32,9 @@ WORKDIR /app
 # Copy requirements file first to take advantage of caching
 COPY requirements.txt .
 
-# Install packages
+# Install packages (pre-installing CPU-only torch to prevent downloading the huge GPU version)
 RUN pip install --upgrade pip setuptools wheel
+RUN pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
 RUN pip install -r requirements.txt
 
 # Force uninstall of GUI opencv-python (which causes SIGSEGV on headless servers)
