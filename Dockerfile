@@ -36,6 +36,11 @@ COPY requirements.txt .
 RUN pip install --upgrade pip setuptools wheel
 RUN pip install -r requirements.txt
 
+# Force uninstall of GUI opencv-python (which causes SIGSEGV on headless servers)
+# and ensure only opencv-python-headless is installed
+RUN pip uninstall -y opencv-python opencv-python-headless && \
+    pip install opencv-python-headless
+
 # Copy project files
 COPY . .
 
