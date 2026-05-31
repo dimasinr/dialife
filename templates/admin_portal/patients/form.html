@@ -1,0 +1,61 @@
+{% extends "admin_portal/base.html" %}
+
+{% block page_title %}{% if patient %}Edit Patient{% else %}Add New Patient{% endif %}{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <a href="{% url 'admin_patient_list' %}" class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-medium">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        Back to Patients
+    </a>
+</div>
+
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 p-8 max-w-3xl">
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-label-md text-on-surface-variant font-semibold mb-2">Patient Code <span class="text-error">*</span></label>
+                <input type="text" name="patient_code" value="{{ patient.patient_code|default:'' }}" required class="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-shadow text-body-md" placeholder="e.g. PT-1001">
+            </div>
+            
+            <div>
+                <label class="block text-label-md text-on-surface-variant font-semibold mb-2">Full Name <span class="text-error">*</span></label>
+                <input type="text" name="full_name" value="{{ patient.full_name|default:'' }}" required class="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-shadow text-body-md" placeholder="Enter full name">
+            </div>
+            
+            <div>
+                <label class="block text-label-md text-on-surface-variant font-semibold mb-2">Age <span class="text-error">*</span></label>
+                <input type="number" name="age" value="{{ patient.age|default:'' }}" required min="0" class="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-shadow text-body-md">
+            </div>
+            
+            <div>
+                <label class="block text-label-md text-on-surface-variant font-semibold mb-2">Status</label>
+                <select name="status" class="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-shadow text-body-md">
+                    <option value="stable" {% if patient.status == 'stable' %}selected{% endif %}>Stable</option>
+                    <option value="warning" {% if patient.status == 'warning' %}selected{% endif %}>Warning</option>
+                    <option value="critical" {% if patient.status == 'critical' %}selected{% endif %}>Critical</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-label-md text-on-surface-variant font-semibold mb-2">Ward</label>
+                <input type="text" name="ward" value="{{ patient.ward|default:'Ward A' }}" class="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-shadow text-body-md">
+            </div>
+            
+            <div>
+                <label class="block text-label-md text-on-surface-variant font-semibold mb-2">Bed</label>
+                <input type="text" name="bed" value="{{ patient.bed|default:'' }}" class="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-shadow text-body-md">
+            </div>
+        </div>
+        
+        <div class="flex justify-end gap-3 pt-6 border-t border-outline-variant/30">
+            <a href="{% url 'admin_patient_list' %}" class="px-6 py-2.5 rounded-xl border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors font-medium">Cancel</a>
+            <button type="submit" class="px-6 py-2.5 bg-primary text-white rounded-xl font-medium hover:bg-primary-container shadow-sm hover:shadow transition-all">
+                {% if patient %}Save Changes{% else %}Create Patient{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

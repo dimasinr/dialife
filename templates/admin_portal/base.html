@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "includes/head.html" %}
+    <title>{% block title %}Admin Portal - DIALIFE{% endblock %}</title>
+</head>
+<body class="bg-background text-on-surface">
+    {% include "admin_portal/sidebar.html" %}
+    <main class="ml-64 min-h-screen flex flex-col transition-all duration-300">
+        <header class="bg-surface sticky top-0 z-10 border-b border-outline-variant/30 px-container-padding py-4 flex justify-between items-center">
+            <h1 class="text-headline-sm">{% block page_title %}Dashboard{% endblock %}</h1>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
+                        {{ request.user.username|make_list|first|upper }}
+                    </div>
+                    <span class="text-body-md font-semibold">{{ request.user.get_full_name|default:request.user.username }}</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="p-container-padding flex-1">
+            {% if messages %}
+            <div class="mb-4 space-y-2">
+              {% for message in messages %}
+              <p class="px-4 py-3 rounded-lg text-body-md {% if message.tags == 'error' %}bg-error-container text-on-error-container{% else %}bg-primary/10 text-primary{% endif %} flex items-center gap-2">
+                  <span class="material-symbols-outlined text-sm">{% if message.tags == 'error' %}error{% else %}info{% endif %}</span>
+                  {{ message }}
+              </p>
+              {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

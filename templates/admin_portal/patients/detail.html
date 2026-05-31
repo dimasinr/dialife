@@ -1,0 +1,75 @@
+{% extends "admin_portal/base.html" %}
+
+{% block page_title %}Patient Details{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex flex-wrap justify-between items-center gap-4">
+    <a href="{% url 'admin_patient_list' %}" class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-medium">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        Back to Patients
+    </a>
+    
+    <div class="flex gap-2">
+        <a href="{% url 'admin_patient_edit' patient.pk %}" class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-xl text-on-surface hover:bg-surface-container-low transition-colors font-medium">
+            <span class="material-symbols-outlined text-xl">edit</span>
+            Edit
+        </a>
+    </div>
+</div>
+
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden max-w-4xl">
+    <div class="p-8 border-b border-outline-variant/30 flex items-start gap-6">
+        <div class="w-24 h-24 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+            {% if patient.photo_url %}
+            <img src="{{ patient.photo_url }}" class="w-full h-full rounded-full object-cover">
+            {% else %}
+            <span class="material-symbols-outlined text-5xl">person</span>
+            {% endif %}
+        </div>
+        
+        <div class="flex-1">
+            <div class="flex flex-wrap justify-between items-start gap-4 mb-2">
+                <div>
+                    <h2 class="text-headline-sm font-bold text-on-surface">{{ patient.full_name }}</h2>
+                    <p class="text-body-lg text-primary font-mono font-medium">{{ patient.patient_code }}</p>
+                </div>
+                
+                <div>
+                    {% if patient.status == 'stable' %}
+                    <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-bold rounded-full uppercase">Stable</span>
+                    {% elif patient.status == 'warning' %}
+                    <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm font-bold rounded-full uppercase">Warning</span>
+                    {% else %}
+                    <span class="px-3 py-1 bg-red-100 text-red-700 text-sm font-bold rounded-full uppercase">Critical</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="p-8 bg-surface-container-low">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div>
+                <p class="text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Age</p>
+                <p class="text-body-lg font-medium text-on-surface">{{ patient.age }} years</p>
+            </div>
+            <div>
+                <p class="text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Ward</p>
+                <p class="text-body-lg font-medium text-on-surface">{{ patient.ward }}</p>
+            </div>
+            <div>
+                <p class="text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Bed</p>
+                <p class="text-body-lg font-medium text-on-surface">{{ patient.bed|default:"-" }}</p>
+            </div>
+            <div>
+                <p class="text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Admitted At</p>
+                <p class="text-body-lg font-medium text-on-surface">{{ patient.admitted_at|date:"M d, Y H:i" }}</p>
+            </div>
+            <div>
+                <p class="text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Last Updated</p>
+                <p class="text-body-lg font-medium text-on-surface">{{ patient.updated_at|date:"M d, Y H:i" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

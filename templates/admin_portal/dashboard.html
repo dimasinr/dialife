@@ -1,0 +1,93 @@
+{% extends "admin_portal/base.html" %}
+
+{% block page_title %}Overview{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Patients Card -->
+    <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/30 flex items-center gap-4 hover:shadow-md transition-shadow">
+        <div class="w-14 h-14 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+            <span class="material-symbols-outlined text-3xl">patient_list</span>
+        </div>
+        <div>
+            <p class="text-label-md text-on-surface-variant uppercase tracking-wider">Total Patients</p>
+            <h3 class="text-display-lg font-bold text-on-surface">{{ total_patients }}</h3>
+        </div>
+    </div>
+    
+    <!-- Nurses Card -->
+    <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/30 flex items-center gap-4 hover:shadow-md transition-shadow">
+        <div class="w-14 h-14 rounded-full bg-secondary/10 text-secondary flex items-center justify-center">
+            <span class="material-symbols-outlined text-3xl">medical_services</span>
+        </div>
+        <div>
+            <p class="text-label-md text-on-surface-variant uppercase tracking-wider">Total Nurses</p>
+            <h3 class="text-display-lg font-bold text-on-surface">{{ total_nurses }}</h3>
+        </div>
+    </div>
+    
+    <!-- Foods Card -->
+    <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/30 flex items-center gap-4 hover:shadow-md transition-shadow">
+        <div class="w-14 h-14 rounded-full bg-amber-500/10 text-amber-600 flex items-center justify-center">
+            <span class="material-symbols-outlined text-3xl">restaurant</span>
+        </div>
+        <div>
+            <p class="text-label-md text-on-surface-variant uppercase tracking-wider">Total Foods</p>
+            <h3 class="text-display-lg font-bold text-on-surface">{{ total_foods }}</h3>
+        </div>
+    </div>
+    
+    <!-- Education Card -->
+    <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/30 flex items-center gap-4 hover:shadow-md transition-shadow">
+        <div class="w-14 h-14 rounded-full bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
+            <span class="material-symbols-outlined text-3xl">library_books</span>
+        </div>
+        <div>
+            <p class="text-label-md text-on-surface-variant uppercase tracking-wider">Education Modules</p>
+            <h3 class="text-display-lg font-bold text-on-surface">{{ total_modules }}</h3>
+        </div>
+    </div>
+</div>
+
+<h2 class="text-headline-sm font-semibold mb-4">Recent Activity</h2>
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden">
+    <div class="divide-y divide-outline-variant/20">
+        {% if latest_patient %}
+        <div class="p-4 hover:bg-surface-container-low transition-colors flex items-start gap-4">
+            <div class="mt-1 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined">person_add</span>
+            </div>
+            <div>
+                <p class="text-body-md text-on-surface font-medium">New patient registered</p>
+                <p class="text-body-sm text-on-surface-variant">{{ latest_patient.full_name }} ({{ latest_patient.patient_code }}) was added to the system.</p>
+                <p class="text-label-md text-on-surface-variant mt-1">{{ latest_patient.admitted_at|timesince }} ago</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if latest_nurse %}
+        <div class="p-4 hover:bg-surface-container-low transition-colors flex items-start gap-4">
+            <div class="mt-1 w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+                <span class="material-symbols-outlined">badge</span>
+            </div>
+            <div>
+                <p class="text-body-md text-on-surface font-medium">New nurse profile created</p>
+                <p class="text-body-sm text-on-surface-variant">{{ latest_nurse.user.get_full_name }} ({{ latest_nurse.employee_id }}) joined.</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if latest_food %}
+        <div class="p-4 hover:bg-surface-container-low transition-colors flex items-start gap-4">
+            <div class="mt-1 w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600">
+                <span class="material-symbols-outlined">set_meal</span>
+            </div>
+            <div>
+                <p class="text-body-md text-on-surface font-medium">New food item imported</p>
+                <p class="text-body-sm text-on-surface-variant">{{ latest_food.name }} was added to the database.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

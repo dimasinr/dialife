@@ -1,0 +1,61 @@
+{% extends "admin_portal/base.html" %}
+
+{% block page_title %}{% if module %}Edit Module{% else %}Add Education Module{% endif %}{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <a href="{% url 'admin_education_list' %}" class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-medium">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        Back to Modules
+    </a>
+</div>
+
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 p-8 max-w-4xl">
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        
+        <div>
+            <label class="block text-label-md text-on-surface-variant font-semibold mb-2">Module Title <span class="text-error">*</span></label>
+            <input type="text" name="title" value="{{ module.title|default:'' }}" required class="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-shadow text-body-md" placeholder="Enter title">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-label-md text-on-surface-variant font-semibold mb-2">Thumbnail Image</label>
+                {% if module.thumbnail_url %}
+                <div class="mb-3">
+                    <img src="{{ module.thumbnail_url }}" alt="Current Thumbnail" class="h-32 rounded-lg border border-outline-variant/30 object-cover">
+                </div>
+                {% endif %}
+                <input type="file" name="thumbnail" accept="image/*" class="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-shadow text-body-md file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer">
+            </div>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-label-md text-on-surface-variant font-semibold mb-2">Display Order (Sort)</label>
+                    <input type="number" name="sort_order" value="{{ module.sort_order|default:'0' }}" class="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-shadow text-body-md">
+                </div>
+                
+                <div>
+                    <label class="flex items-center gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 cursor-pointer">
+                        <input type="checkbox" name="is_published" {% if not module or module.is_published %}checked{% endif %} class="w-5 h-5 text-primary rounded focus:ring-primary">
+                        <span class="text-body-md font-medium text-on-surface">Publish Immediately</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <label class="block text-label-md text-on-surface-variant font-semibold mb-2">Content (Markdown/HTML) <span class="text-error">*</span></label>
+            <textarea name="content" rows="12" required class="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-shadow text-body-md font-mono text-sm" placeholder="Write the content here...">{{ module.content|default:'' }}</textarea>
+        </div>
+        
+        <div class="flex justify-end gap-3 pt-6 border-t border-outline-variant/30">
+            <a href="{% url 'admin_education_list' %}" class="px-6 py-2.5 rounded-xl border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors font-medium">Cancel</a>
+            <button type="submit" class="px-6 py-2.5 bg-primary text-white rounded-xl font-medium hover:bg-primary-container shadow-sm hover:shadow transition-all">
+                {% if module %}Save Changes{% else %}Create Module{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

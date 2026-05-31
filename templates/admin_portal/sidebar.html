@@ -1,0 +1,45 @@
+<aside class="w-64 bg-inverse-surface text-inverse-on-surface fixed inset-y-0 left-0 z-20 flex flex-col transition-transform duration-300">
+    <div class="p-6 border-b border-white/10">
+        <h2 class="text-headline-sm font-bold tracking-tight text-white flex items-center gap-2">
+            <span class="material-symbols-outlined text-3xl">admin_panel_settings</span>
+            Admin Portal
+        </h2>
+    </div>
+    
+    <nav class="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
+        <a href="{% url 'admin_dashboard' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {% if nav_active == 'dashboard' %}bg-primary text-white font-semibold shadow-md{% else %}text-inverse-on-surface/80 hover:bg-white/10 hover:text-white{% endif %}">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>Dashboard</span>
+        </a>
+        
+        <a href="{% url 'admin_patient_list' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {% if nav_active == 'patients' %}bg-primary text-white font-semibold shadow-md{% else %}text-inverse-on-surface/80 hover:bg-white/10 hover:text-white{% endif %}">
+            <span class="material-symbols-outlined">patient_list</span>
+            <span>Patients</span>
+        </a>
+        
+        <a href="{% url 'admin_nurse_list' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {% if nav_active == 'nurses' %}bg-primary text-white font-semibold shadow-md{% else %}text-inverse-on-surface/80 hover:bg-white/10 hover:text-white{% endif %}">
+            <span class="material-symbols-outlined">medical_services</span>
+            <span>Nurses</span>
+        </a>
+        
+        <a href="{% url 'admin_food_list' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {% if nav_active == 'foods' %}bg-primary text-white font-semibold shadow-md{% else %}text-inverse-on-surface/80 hover:bg-white/10 hover:text-white{% endif %}">
+            <span class="material-symbols-outlined">restaurant</span>
+            <span>Foods</span>
+        </a>
+        
+        <a href="{% url 'admin_education_list' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {% if nav_active == 'education' %}bg-primary text-white font-semibold shadow-md{% else %}text-inverse-on-surface/80 hover:bg-white/10 hover:text-white{% endif %}">
+            <span class="material-symbols-outlined">library_books</span>
+            <span>Education</span>
+        </a>
+    </nav>
+    
+    <div class="p-4 border-t border-white/10">
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-error/10 text-error-container hover:bg-error hover:text-on-error transition-colors font-medium">
+                <span class="material-symbols-outlined">logout</span>
+                Logout
+            </button>
+        </form>
+    </div>
+</aside>

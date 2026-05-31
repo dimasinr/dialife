@@ -1,0 +1,63 @@
+{% extends "admin_portal/base.html" %}
+
+{% block page_title %}Nurses{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex flex-wrap justify-between items-center gap-4">
+    <form method="get" class="flex gap-2 w-full max-w-md relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+        <input type="text" name="q" value="{{ q }}" placeholder="Search by name or email..." class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-shadow text-body-md" />
+        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-xl font-medium hover:bg-primary-container transition-colors">Search</button>
+    </form>
+    
+    <a href="{% url 'admin_nurse_create' %}" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-medium hover:bg-primary-container transition-colors">
+        <span class="material-symbols-outlined text-xl">add</span>
+        Add Nurse
+    </a>
+</div>
+
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-surface-container-low text-label-md text-on-surface-variant border-b border-outline-variant/30">
+                    <th class="py-3 px-6 font-semibold">Employee ID</th>
+                    <th class="py-3 px-6 font-semibold">Name</th>
+                    <th class="py-3 px-6 font-semibold">Email</th>
+                    <th class="py-3 px-6 font-semibold">Ward</th>
+                    <th class="py-3 px-6 font-semibold">Title</th>
+                    <th class="py-3 px-6 font-semibold text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/30">
+                {% for nurse in nurses %}
+                <tr class="hover:bg-surface-container-lowest/50 transition-colors">
+                    <td class="py-3 px-6 text-body-md font-mono text-primary font-medium">{{ nurse.employee_id }}</td>
+                    <td class="py-3 px-6 text-body-md text-on-surface font-medium">{{ nurse.user.get_full_name|default:"-" }}</td>
+                    <td class="py-3 px-6 text-body-md text-on-surface-variant">{{ nurse.user.email|default:"-" }}</td>
+                    <td class="py-3 px-6 text-body-md text-on-surface-variant">{{ nurse.ward }}</td>
+                    <td class="py-3 px-6 text-body-md text-on-surface-variant">{{ nurse.title }}</td>
+                    <td class="py-3 px-6 text-right">
+                        <div class="flex justify-end gap-2">
+                            <a href="{% url 'admin_nurse_reset_password' nurse.pk %}" title="Reset Password" class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container text-on-surface-variant hover:bg-primary hover:text-white transition-colors">
+                                <span class="material-symbols-outlined text-sm">key</span>
+                            </a>
+                            <a href="{% url 'admin_nurse_edit' nurse.pk %}" title="Edit Nurse" class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container text-on-surface-variant hover:bg-secondary hover:text-white transition-colors">
+                                <span class="material-symbols-outlined text-sm">edit</span>
+                            </a>
+                            <a href="{% url 'admin_nurse_delete' nurse.pk %}" title="Delete Nurse" class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container text-on-surface-variant hover:bg-error hover:text-white transition-colors">
+                                <span class="material-symbols-outlined text-sm">delete</span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="py-8 text-center text-on-surface-variant">No nurses found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "admin_portal/base.html" %}
+
+{% block page_title %}Delete Patient{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <a href="{% url 'admin_patient_list' %}" class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-medium">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        Back to Patients
+    </a>
+</div>
+
+<div class="bg-error-container rounded-2xl shadow-sm border border-error/20 p-8 max-w-xl mx-auto text-center">
+    <div class="w-20 h-20 bg-error/10 text-error rounded-full flex items-center justify-center mx-auto mb-6">
+        <span class="material-symbols-outlined text-4xl">warning</span>
+    </div>
+    
+    <h2 class="text-headline-md font-bold text-on-error-container mb-2">Delete Patient Record</h2>
+    <p class="text-body-lg text-on-error-container/80 mb-8">
+        Are you sure you want to delete <strong>"{{ patient.full_name }}"</strong>? This action will mark the patient as inactive.
+    </p>
+    
+    <form method="post" class="flex justify-center gap-4">
+        {% csrf_token %}
+        <a href="{% url 'admin_patient_list' %}" class="px-6 py-3 rounded-xl border border-error text-on-error-container hover:bg-error/10 transition-colors font-medium">Cancel</a>
+        <button type="submit" class="px-6 py-3 bg-error text-white rounded-xl font-medium hover:bg-error/90 shadow-sm hover:shadow transition-all flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">delete</span>
+            Yes, Delete it
+        </button>
+    </form>
+</div>
+{% endblock %}
