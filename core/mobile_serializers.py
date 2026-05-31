@@ -139,6 +139,7 @@ class FoodItemSerializer(serializers.ModelSerializer):
             'phosphorus',
             'sodium',
             'hd_status',
+            'estimated_fluid_ml',
             'description',
         )
 
