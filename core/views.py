@@ -152,6 +152,7 @@ def patient_detail(request, pk):
         'intake_today': intake,
         'output_today': urine_output,
         'fluid_percent': patient.fluid_percent,
+        'remaining_today' : patient.daily_fluid_limit_ml - intake,
     }
     return render(request, 'monitoring_patiens/detail_patiens.html', context)
 

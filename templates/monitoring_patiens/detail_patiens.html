@@ -33,7 +33,7 @@
 
 <div class="bento-grid">
   <div class="col-span-12 lg:col-span-4 bg-white border border-outline-variant rounded-xl p-6">
-    <h3 class="font-headline-sm border-b border-outline-variant pb-4 mb-4">Today's Fluid Balance</h3>
+    <h3 class="font-headline-sm border-b border-outline-variant pb-4 mb-4">Today's Fluid Allowance</h3>
     <div class="flex justify-center py-4">
       <div style="position:relative; width:200px; height:200px;">
         <canvas id="fluidDonutChart"></canvas>
@@ -45,6 +45,7 @@
       </div>
     </div>
     <p class="text-center text-label-md text-on-surface-variant mb-4">{{ fluid_percent }}% of daily limit</p>
+    <p class="text-center text-label-md text-on-surface-variant">Remaining Today: {{ remaining_today }}ml</p>
     <div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant text-center">
       <div>
         <p class="text-xs uppercase text-on-surface-variant">Intake</p>
@@ -68,10 +69,10 @@
         <p class="font-label-md text-on-surface-variant mb-2">Urine Output</p>
         <p class="font-headline-md {% if patient.urine_output_24h_ml < 400 %}text-error{% endif %}">{{ patient.urine_output_24h_ml }} <span class="text-body-md">ml/24h</span></p>
       </div>
-      <div class="p-4 bg-surface-container-low rounded-lg border border-outline-variant/30">
+      <!-- <div class="p-4 bg-surface-container-low rounded-lg border border-outline-variant/30">
         <p class="font-label-md text-on-surface-variant mb-2">Temperature</p>
         <p class="font-headline-md">{% if vital %}{{ vital.temperature_c }} <span class="text-body-md">°C</span>{% else %}<span class="text-body-md text-on-surface-variant">—</span>{% endif %}</p>
-      </div>
+      </div> -->
     </div>
   </div>
 
