@@ -10,3 +10,4 @@ gunicorn
 django-import-export
 pandas
 openpyxl
+opencv-python-headless
