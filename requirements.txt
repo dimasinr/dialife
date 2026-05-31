@@ -4,7 +4,7 @@ djangorestframework-simplejwt
 Pillow
 pandas
 numpy
-tensorflow
+tensorflow-cpu
 ultralytics
 gunicorn
 django-import-export
