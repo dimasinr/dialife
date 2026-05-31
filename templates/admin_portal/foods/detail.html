@@ -1,0 +1,87 @@
+{% extends "admin_portal/base.html" %}
+
+{% block page_title %}Food Details{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex flex-wrap justify-between items-center gap-4">
+    <a href="{% url 'admin_food_list' %}" class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-medium">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        Back to Foods
+    </a>
+    
+    <div class="flex gap-2">
+        <a href="{% url 'admin_food_edit' food.pk %}" class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-xl text-on-surface hover:bg-surface-container-low transition-colors font-medium">
+            <span class="material-symbols-outlined text-xl">edit</span>
+            Edit
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="col-span-1">
+        <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden">
+            {% if food.image_url %}
+            <img src="{{ food.image_url }}" alt="{{ food.name }}" class="w-full h-64 object-cover">
+            {% else %}
+            <div class="w-full h-64 bg-surface-container flex items-center justify-center text-on-surface-variant">
+                <span class="material-symbols-outlined text-6xl opacity-50">restaurant</span>
+            </div>
+            {% endif %}
+            
+            <div class="p-6">
+                <h2 class="text-headline-sm font-bold text-on-surface mb-2">{{ food.name }}</h2>
+                <div class="mb-4">
+                    {% if food.hd_status == 'aman' %}
+                    <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-bold rounded-full uppercase">Aman</span>
+                    {% elif food.hd_status == 'batasi' %}
+                    <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm font-bold rounded-full uppercase">Batasi</span>
+                    {% else %}
+                    <span class="px-3 py-1 bg-red-100 text-red-700 text-sm font-bold rounded-full uppercase">Hindari</span>
+                    {% endif %}
+                </div>
+                {% if food.description %}
+                <p class="text-body-md text-on-surface-variant whitespace-pre-line">{{ food.description }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-span-1 md:col-span-2">
+        <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 p-6">
+            <h3 class="text-headline-sm font-semibold mb-6">Nutrition Information (per 100g)</h3>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                <div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+                    <p class="text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Calories</p>
+                    <p class="text-headline-sm font-bold text-on-surface">{{ food.calories }} <span class="text-body-md font-normal text-on-surface-variant">kcal</span></p>
+                </div>
+                
+                <div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+                    <p class="text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Protein</p>
+                    <p class="text-headline-sm font-bold text-on-surface">{{ food.protein }} <span class="text-body-md font-normal text-on-surface-variant">g</span></p>
+                </div>
+                
+                <div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+                    <p class="text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Fluid Content</p>
+                    <p class="text-headline-sm font-bold text-on-surface">{{ food.estimated_fluid_ml }} <span class="text-body-md font-normal text-on-surface-variant">ml</span></p>
+                </div>
+                
+                <div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+                    <p class="text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Sodium (Na)</p>
+                    <p class="text-headline-sm font-bold text-on-surface">{{ food.sodium }} <span class="text-body-md font-normal text-on-surface-variant">mg</span></p>
+                </div>
+                
+                <div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+                    <p class="text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Potassium (K)</p>
+                    <p class="text-headline-sm font-bold text-on-surface">{{ food.potassium }} <span class="text-body-md font-normal text-on-surface-variant">mg</span></p>
+                </div>
+                
+                <div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+                    <p class="text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Phosphorus (P)</p>
+                    <p class="text-headline-sm font-bold text-on-surface">{{ food.phosphorus }} <span class="text-body-md font-normal text-on-surface-variant">mg</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

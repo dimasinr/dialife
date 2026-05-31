@@ -8,6 +8,7 @@ urlpatterns = [
     path('', include('core.urls')),
     path('api/', include('core.api_urls')),
     path('api/v1/nurse/', include('core.nurse_api_urls')),
+    path('dashboard/admin/', include('admin_portal.urls')),
 ]
 
 if settings.DEBUG:

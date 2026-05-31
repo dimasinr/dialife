@@ -1,0 +1,58 @@
+{% extends "admin_portal/base.html" %}
+
+{% block page_title %}Module Details{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex flex-wrap justify-between items-center gap-4">
+    <a href="{% url 'admin_education_list' %}" class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-medium">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        Back to Modules
+    </a>
+    
+    <div class="flex gap-2">
+        <form method="post" action="{% url 'admin_education_toggle_publish' module.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-xl text-on-surface hover:bg-surface-container-low transition-colors font-medium">
+                {% if module.is_published %}
+                <span class="material-symbols-outlined text-xl text-yellow-600">visibility_off</span>
+                Unpublish
+                {% else %}
+                <span class="material-symbols-outlined text-xl text-green-600">visibility</span>
+                Publish
+                {% endif %}
+            </button>
+        </form>
+        
+        <a href="{% url 'admin_education_edit' module.pk %}" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-medium hover:bg-primary-container transition-colors">
+            <span class="material-symbols-outlined text-xl">edit</span>
+            Edit
+        </a>
+    </div>
+</div>
+
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden max-w-4xl">
+    {% if module.thumbnail_url %}
+    <img src="{{ module.thumbnail_url }}" alt="{{ module.title }}" class="w-full h-64 object-cover">
+    {% else %}
+    <div class="w-full h-32 bg-primary/5 border-b border-outline-variant/30"></div>
+    {% endif %}
+    
+    <div class="p-8">
+        <div class="flex items-center gap-4 mb-4">
+            {% if module.is_published %}
+            <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full uppercase">Published</span>
+            {% else %}
+            <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-bold rounded-full uppercase">Draft</span>
+            {% endif %}
+            <span class="text-label-md text-on-surface-variant">Order: {{ module.sort_order }}</span>
+            <span class="text-label-md text-on-surface-variant">Created: {{ module.created_at|date:"M d, Y" }}</span>
+        </div>
+        
+        <h1 class="text-display-lg font-bold text-on-surface mb-8">{{ module.title }}</h1>
+        
+        <div class="prose max-w-none text-body-lg text-on-surface leading-relaxed">
+            {{ module.content|linebreaks }}
+        </div>
+    </div>
+</div>
+{% endblock %}

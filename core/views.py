@@ -21,6 +21,8 @@ def _nurse_context(request):
 
 def login_view(request):
     if request.user.is_authenticated:
+        if request.user.is_superuser:
+            return redirect('admin_dashboard')
         return redirect('dashboard')
 
     if request.method == 'POST':
@@ -29,6 +31,8 @@ def login_view(request):
         user = authenticate(request, username=employee_id, password=password)
         if user is not None:
             auth_login(request, user)
+            if user.is_superuser:
+                return redirect('admin_dashboard')
             return redirect('dashboard')
         messages.error(request, 'Employee ID atau password tidak valid.')
 

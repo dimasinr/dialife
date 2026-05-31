@@ -12,6 +12,8 @@ from .models import (
     UserProfile,
     VitalReading,
 )
+from import_export import resources, fields
+from import_export.admin import ImportExportModelAdmin
 
 
 @admin.register(UserProfile)
@@ -41,8 +43,44 @@ class PatientAdmin(admin.ModelAdmin):
     search_fields = ('patient_code', 'full_name', 'bed')
 
 
+class FoodItemResource(resources.ModelResource):
+    name = fields.Field(column_name='name', attribute='name')
+    calories = fields.Field(column_name='calories', attribute='calories')
+    protein = fields.Field(column_name='proteins', attribute='protein')
+    sodium = fields.Field(column_name='Natrium', attribute='sodium')
+    potassium = fields.Field(column_name='Kalium', attribute='potassium')
+    phosphorus = fields.Field(column_name='Fosfor', attribute='phosphorus')
+    estimated_fluid_ml = fields.Field(column_name='cairan', attribute='estimated_fluid_ml')
+
+    class Meta:
+        model = FoodItem
+        fields = ('id', 'name', 'calories', 'protein', 'sodium', 'potassium', 'phosphorus', 'estimated_fluid_ml')
+        import_id_fields = ('id',)
+        
+    def before_import_row(self, row, **kwargs):
+        hd = row.get('status HD', 'Aman')
+        if not hd:
+            hd = 'Aman'
+        hd = hd.lower()
+        if hd not in ['aman', 'batasi', 'hindari']:
+            hd = 'aman'
+        row['hd_status'] = hd
+
+        row['image_name'] = row.get('image', '')
+        
+        kategori = row.get('kategori klinis', '')
+        porsi = row.get('porsi saji', '')
+        desc = []
+        if kategori:
+            desc.append(f"Kategori Klinis: {kategori}")
+        if porsi:
+            desc.append(f"Porsi Saji: {porsi}")
+        row['description'] = "\n".join(desc)
+
+
 @admin.register(FoodItem)
-class FoodItemAdmin(admin.ModelAdmin):
+class FoodItemAdmin(ImportExportModelAdmin):
+    resource_classes = [FoodItemResource]
     list_display = ('name', 'hd_status', 'sodium', 'potassium', 'estimated_fluid_ml', 'is_active')
     list_filter = ('hd_status', 'is_active')
     search_fields = ('name',)
@@ -63,6 +101,7 @@ class UrineScanHistoryAdmin(admin.ModelAdmin):
 class EducationModuleAdmin(admin.ModelAdmin):
     list_display = ('title', 'sort_order', 'is_published')
     list_filter = ('is_published',)
+    search_fields = ('title',)
 
 
 @admin.register(VitalReading)
