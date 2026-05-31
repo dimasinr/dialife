@@ -166,3 +166,31 @@ class EducationModuleSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.thumbnail.url)
             return obj.thumbnail.url
         return obj.thumbnail_name or ''
+
+
+class ManualFoodItemSerializer(serializers.Serializer):
+    food_id = serializers.IntegerField(min_value=1)
+    quantity = serializers.IntegerField(min_value=1, max_value=20, default=1)
+
+
+class ManualFoodBatchSerializer(serializers.Serializer):
+    items = ManualFoodItemSerializer(many=True)
+
+    def validate_items(self, value):
+        if not value:
+            raise serializers.ValidationError('Pilih minimal satu makanan.')
+        food_ids = [item['food_id'] for item in value]
+        if len(food_ids) != len(set(food_ids)):
+            raise serializers.ValidationError('food_id duplikat dalam satu request.')
+        existing = set(
+            FoodItem.objects.filter(
+                id__in=food_ids,
+                is_active=True,
+            ).values_list('id', flat=True)
+        )
+        missing = set(food_ids) - existing
+        if missing:
+            raise serializers.ValidationError(
+                f'FoodItem tidak ditemukan: {sorted(missing)}'
+            )
+        return value

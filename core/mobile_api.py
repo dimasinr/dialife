@@ -23,6 +23,7 @@ from .mobile_serializers import (
     FluidCalculateSerializer,
     FoodItemSerializer,
     EducationModuleSerializer,
+    ManualFoodBatchSerializer,
     PatientLoginSerializer,
     PatientRegisterSerializer,
     ProfileSerializer,
@@ -35,6 +36,7 @@ from .services.fluid_service import (
     today_food_ml,
     today_intake_ml,
 )
+from .services.food_intake_service import record_manual_food_items
 from .services.history_service import build_history_entries
 from .services.scan_service import scan_food_drink, scan_urine_volume
 
@@ -336,6 +338,26 @@ class FluidIntakeAPIView(APIView):
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+class ManualFoodInputAPIView(APIView):
+    """
+    Input manual dari daftar FoodItem (multi-select).
+    Menghitung cairan seperti scan, tanpa upload gambar.
+    """
+
+    def post(self, request):
+        patient = get_patient(request.user)
+        serializer = ManualFoodBatchSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            result = record_manual_food_items(
+                patient,
+                serializer.validated_data['items'],
+            )
+        except ValueError as exc:
+            raise ValidationError({'items': str(exc)}) from exc
+        return Response(result, status=status.HTTP_201_CREATED)
 
 
 class HistoryAPIView(APIView):
