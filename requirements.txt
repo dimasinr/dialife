@@ -9,4 +9,4 @@ ultralytics
 gunicorn
 django-import-export
 openpyxl
-opencv-python
+opencv-python-headless
