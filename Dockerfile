@@ -48,6 +48,13 @@ COPY . .
 # Disable TensorFlow oneDNN and set CPU variables to avoid SIGSEGV in restricted VMs
 ENV TF_ENABLE_ONEDNN_OPTS=0
 
+# Prevent PyTorch/OpenMP from spawning thread pools that crash under Gunicorn
+ENV OMP_NUM_THREADS=1
+ENV MKL_NUM_THREADS=1
+ENV OPENBLAS_NUM_THREADS=1
+ENV NUMEXPR_NUM_THREADS=1
+ENV VECLIB_MAXIMUM_THREADS=1
+
 EXPOSE 8000
 
 # Run using a single sync worker to prevent C-level thread conflicts in OpenCV/TF/YOLO
