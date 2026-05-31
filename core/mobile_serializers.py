@@ -12,6 +12,7 @@ class PatientRegisterSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True, min_length=6)
     dry_weight = serializers.DecimalField(max_digits=5, decimal_places=1, required=False)
     urine_output_ml = serializers.IntegerField(required=False, default=0, min_value=0)
+    age = serializers.IntegerField(required=False, default=0, min_value=0)
 
     def validate_email(self, value):
         if User.objects.filter(username__iexact=value).exists():
@@ -25,8 +26,9 @@ class PatientRegisterSerializer(serializers.Serializer):
         last_name = parts[1] if len(parts) > 1 else ''
         email = validated_data['email']
         urine = validated_data.get('urine_output_ml', 0)
-        dry_weight = validated_data.get('dry_weight', 70)
+        dry_weight = validated_data.get('dry_weight', 50)
         limit = calculate_fluid_limit_ml(urine)
+        age = validated_data.get('age', 0)
 
         user = User.objects.create_user(
             username=email,
@@ -41,7 +43,7 @@ class PatientRegisterSerializer(serializers.Serializer):
             user=user,
             patient_code=code,
             full_name=name,
-            age=0,
+            age=age,
             dry_weight_kg=dry_weight,
             daily_fluid_limit_ml=limit,
             urine_output_24h_ml=urine,
