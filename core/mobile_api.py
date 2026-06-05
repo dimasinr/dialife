@@ -184,6 +184,7 @@ class FoodDrinkScanAPIView(APIView):
 
     def post(self, request):
         image = request.FILES.get('image')
+        print(image)
         if not image:
             raise ValidationError({'image': 'Image file is required.'})
         patient = resolve_patient(request.user, request.data.get('patient_id'))
