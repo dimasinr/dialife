@@ -1,9 +1,12 @@
-<aside class="w-64 bg-inverse-surface text-inverse-on-surface fixed inset-y-0 left-0 z-20 flex flex-col transition-transform duration-300">
-    <div class="p-6 border-b border-white/10">
+<aside id="admin-sidebar" class="w-64 bg-inverse-surface text-inverse-on-surface fixed inset-y-0 left-0 z-30 flex flex-col transition-transform duration-300 -translate-x-full md:translate-x-0">
+    <div class="p-6 border-b border-white/10 flex justify-between items-center">
         <h2 class="text-headline-sm font-bold tracking-tight text-white flex items-center gap-2">
             <span class="material-symbols-outlined text-3xl">admin_panel_settings</span>
             Admin Portal
         </h2>
+        <button id="close-sidebar" class="md:hidden text-inverse-on-surface/80 hover:text-white transition-colors flex items-center">
+            <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
     </div>
     
     <nav class="flex-1 py-6 px-4 space-y-2 overflow-y-auto">

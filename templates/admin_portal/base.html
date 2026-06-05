@@ -6,9 +6,15 @@
 </head>
 <body class="bg-background text-on-surface">
     {% include "admin_portal/sidebar.html" %}
-    <main class="ml-64 min-h-screen flex flex-col transition-all duration-300">
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-20 hidden md:hidden transition-opacity duration-300 opacity-0"></div>
+    <main class="ml-0 md:ml-64 min-h-screen flex flex-col transition-all duration-300">
         <header class="bg-surface sticky top-0 z-10 border-b border-outline-variant/30 px-container-padding py-4 flex justify-between items-center">
-            <h1 class="text-headline-sm">{% block page_title %}Dashboard{% endblock %}</h1>
+            <div class="flex items-center gap-3">
+                <button id="open-sidebar" class="md:hidden text-on-surface hover:bg-surface-container rounded-lg p-1 transition-colors flex items-center">
+                    <span class="material-symbols-outlined text-2xl">menu</span>
+                </button>
+                <h1 class="text-headline-sm">{% block page_title %}Dashboard{% endblock %}</h1>
+            </div>
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
@@ -34,6 +40,34 @@
             {% block content %}{% endblock %}
         </div>
     </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('admin-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const openBtn = document.getElementById('open-sidebar');
+            const closeBtn = document.getElementById('close-sidebar');
+
+            function toggleSidebar(show) {
+                if (show) {
+                    sidebar.classList.remove('-translate-x-full');
+                    overlay.classList.remove('hidden');
+                    setTimeout(() => {
+                        overlay.classList.remove('opacity-0');
+                    }, 10);
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.add('opacity-0');
+                    setTimeout(() => {
+                        overlay.classList.add('hidden');
+                    }, 300);
+                }
+            }
+
+            if (openBtn) openBtn.addEventListener('click', () => toggleSidebar(true));
+            if (closeBtn) closeBtn.addEventListener('click', () => toggleSidebar(false));
+            if (overlay) overlay.addEventListener('click', () => toggleSidebar(false));
+        });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

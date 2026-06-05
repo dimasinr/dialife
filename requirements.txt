@@ -12,3 +12,4 @@ openpyxl
 opencv-python-headless
 torch
 transformers
+psycopg2-binary
