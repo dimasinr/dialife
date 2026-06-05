@@ -7,7 +7,7 @@ from .scan_urine_yolo import (
     predict_volume_from_bytes,
     _model_cache,
 )
-from .scan_food import predict_food_from_bytes
+from .scan_foods import predict_food_from_bytes
 
 # Thresholds untuk mengenali gambar
 URINE_CONFIDENCE_THRESHOLD = 0.4
