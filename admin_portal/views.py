@@ -195,8 +195,18 @@ def food_create(request):
         fluid = request.POST.get('estimated_fluid_ml') or 0
         hd_status = request.POST.get('hd_status', 'aman')
         description = request.POST.get('description', '')
-        image = request.FILES.get('image')
         
+        image_source = request.POST.get('image_source', 'file')
+        image_url = request.POST.get('image_url', '').strip()
+        image_file = request.FILES.get('image')
+        
+        image_name = ''
+        image = None
+        if image_source == 'url' and image_url:
+            image_name = image_url
+        elif image_source == 'file' and image_file:
+            image = image_file
+            
         food = FoodItem.objects.create(
             name=name,
             calories=calories,
@@ -206,12 +216,10 @@ def food_create(request):
             phosphorus=phosphorus,
             estimated_fluid_ml=fluid,
             hd_status=hd_status,
-            description=description
+            description=description,
+            image_name=image_name,
+            image=image
         )
-        
-        if image:
-            food.image = image
-            food.save()
             
         messages.success(request, 'Food item created successfully.')
         return redirect('admin_food_list')
@@ -238,9 +246,29 @@ def food_edit(request, pk):
         food.hd_status = request.POST.get('hd_status', 'aman')
         food.description = request.POST.get('description', '')
         
-        if 'image' in request.FILES:
-            food.image = request.FILES['image']
-            
+        image_source = request.POST.get('image_source')
+        if image_source == 'url':
+            image_url = request.POST.get('image_url', '').strip()
+            food.image_name = image_url
+            if image_url and food.image:
+                food.image.delete(save=False)
+                food.image = None
+        elif image_source == 'file':
+            if 'image' in request.FILES:
+                if food.image:
+                    food.image.delete(save=False)
+                food.image = request.FILES['image']
+                food.image_name = ''
+        else:
+            # Fallback for alternative/legacy POST structures
+            image_url = request.POST.get('image_url')
+            if image_url is not None:
+                food.image_name = image_url.strip()
+            if 'image' in request.FILES:
+                if food.image:
+                    food.image.delete(save=False)
+                food.image = request.FILES['image']
+        
         food.save()
         
         messages.success(request, 'Food item updated successfully.')

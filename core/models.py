@@ -135,7 +135,7 @@ class Patient(models.Model):
 class FoodItem(models.Model):
     name = models.CharField(max_length=128)
     image = models.ImageField(upload_to='nutrition/', blank=True)
-    image_name = models.CharField(max_length=128, blank=True, help_text='Static filename for mobile, e.g. banana.jpg')
+    image_name = models.CharField(max_length=512, blank=True, help_text='Static filename or URL for mobile')
     calories = models.PositiveIntegerField(default=0)
     protein = models.DecimalField(max_digits=6, decimal_places=1, default=0)
     sodium = models.PositiveIntegerField(default=0)
