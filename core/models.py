@@ -124,7 +124,7 @@ class Patient(models.Model):
             pass
         else:
             self.status = PatientStatus.STABLE
-        self.save(update_fields=['status', 'updated_at'])
+        self.save(update_fields=['status', 'fluid_intake_today_ml', 'updated_at'])
 
     def sync_fluid_intake_today(self):
         from core.services.fluid_service import today_intake_ml
@@ -135,7 +135,7 @@ class Patient(models.Model):
 class FoodItem(models.Model):
     name = models.CharField(max_length=128)
     image = models.ImageField(upload_to='nutrition/', blank=True)
-    image_name = models.CharField(max_length=512, blank=True, help_text='Static filename or URL for mobile')
+    image_name = models.CharField(max_length=2048, blank=True, help_text='Static filename or URL for mobile')
     calories = models.PositiveIntegerField(default=0)
     protein = models.DecimalField(max_digits=6, decimal_places=1, default=0)
     sodium = models.PositiveIntegerField(default=0)

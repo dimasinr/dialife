@@ -32,20 +32,25 @@ def fluid_status_from_calculator(urine_output_ml: int, dry_weight: float | None 
 
 
 def today_intake_ml(patient: Patient) -> int:
-    """Sum of drink + food FluidLog entries for today.
+    """Calculate the net fluid intake chronologically.
 
-    Note: scans already create FluidLog entries (via mobile_api.py),
-    so we only query FluidLog to avoid double-counting.
+    Food, drink, and other categories add to the running intake, while urine
+    output reduces it (without letting the running intake go below 0).
     """
     today = timezone.localdate()
-    return int(
-        FluidLog.objects.filter(
-            patient=patient,
-            logged_at__date=today,
-            category__in=[FluidCategory.DRINK, FluidCategory.FOOD],
-        ).aggregate(total=models.Sum('volume_ml'))['total']
-        or 0
-    )
+    logs = FluidLog.objects.filter(
+        patient=patient,
+        logged_at__date=today,
+    ).order_by('logged_at')
+
+    running_intake = 0
+    for log in logs:
+        if log.category in [FluidCategory.DRINK, FluidCategory.FOOD, FluidCategory.OTHER]:
+            running_intake += log.volume_ml
+        elif log.category == FluidCategory.URINE:
+            running_intake = max(0, running_intake - log.volume_ml)
+
+    return running_intake
 
 
 def today_urine_ml(patient: Patient) -> int:

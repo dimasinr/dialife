@@ -310,6 +310,34 @@ def food_import(request):
 
     return render(request, 'admin_portal/foods/import.html', {'nav_active': 'foods'})
 
+@user_passes_test(is_superuser, login_url='login')
+def food_import_images(request):
+    if request.method == 'POST':
+        if 'file' not in request.FILES:
+            messages.error(request, 'Please select a file to upload.')
+            return redirect('admin_food_import_images')
+            
+        file = request.FILES['file']
+        if not (file.name.endswith('.csv') or file.name.endswith('.xls') or file.name.endswith('.xlsx')):
+            messages.error(request, 'Unsupported file format. Please upload CSV, XLS, or XLSX.')
+            return redirect('admin_food_import_images')
+            
+        try:
+            result = FoodImportService.import_images(file)
+            msg = f"Import Images Completed! Total Rows: {result['total']}, Updated: {result['updated']}, Skipped: {result['skipped']}"
+            if result['not_found']:
+                not_found_list = ', '.join(result['not_found'][:20])
+                if len(result['not_found']) > 20:
+                    not_found_list += f"... and {len(result['not_found']) - 20} more"
+                msg += f" | Not found: {not_found_list}"
+            messages.success(request, msg)
+            return redirect('admin_food_list')
+        except Exception as e:
+            messages.error(request, f'Error importing file: {str(e)}')
+            return redirect('admin_food_import_images')
+
+    return render(request, 'admin_portal/foods/import_images.html', {'nav_active': 'foods'})
+
 # ----------------- Education Modules -----------------
 @user_passes_test(is_superuser, login_url='login')
 def education_list(request):

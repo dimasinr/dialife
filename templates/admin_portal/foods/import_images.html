@@ -1,0 +1,117 @@
+{% extends "admin_portal/base.html" %}
+
+{% block page_title %}Import Food Images{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <a href="{% url 'admin_food_list' %}" class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-medium">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        Back to Foods
+    </a>
+</div>
+
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 p-6 sm:p-8 max-w-2xl">
+    <div class="flex items-center gap-3 mb-2">
+        <div class="w-10 h-10 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center">
+            <span class="material-symbols-outlined">image</span>
+        </div>
+        <h2 class="text-headline-sm font-semibold">Import Food Images</h2>
+    </div>
+    <p class="text-body-md text-on-surface-variant mb-6">Upload an Excel file (.xlsx) containing food names and image URLs. This will <strong>only update the image</strong> of existing food items — no new items will be created.</p>
+    
+    <div class="bg-tertiary/5 border border-tertiary/20 rounded-xl p-4 mb-6 flex items-start gap-3">
+        <span class="material-symbols-outlined text-tertiary mt-0.5">info</span>
+        <div class="text-body-sm text-on-surface">
+            <p class="font-medium mb-1">How it works:</p>
+            <ul class="list-disc list-inside space-y-1 text-on-surface-variant">
+                <li>Matches food items by <strong>name</strong> (case-insensitive)</li>
+                <li>Updates only the <strong>image_name</strong> field with the provided URL</li>
+                <li>Items not found in the database will be skipped and reported</li>
+            </ul>
+        </div>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        <div class="border-2 border-dashed border-outline-variant/50 rounded-xl p-10 flex flex-col items-center justify-center text-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="document.getElementById('file').click()">
+            <div class="w-16 h-16 rounded-full bg-tertiary/10 text-tertiary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-3xl">add_photo_alternate</span>
+            </div>
+            <p class="text-body-lg font-medium text-on-surface mb-1">Click to browse or drag and drop</p>
+            <p class="text-body-sm text-on-surface-variant mb-4">XLSX, XLS, or CSV</p>
+            
+            <input type="file" name="file" id="file" accept=".csv,.xls,.xlsx" class="hidden" onchange="document.getElementById('filename').textContent = this.files[0] ? this.files[0].name : 'No file selected'" required>
+            
+            <div class="px-4 py-2 bg-surface text-on-surface rounded-lg border border-outline-variant/50 flex items-center gap-2 max-w-full overflow-hidden">
+                <span class="material-symbols-outlined text-sm text-on-surface-variant">description</span>
+                <span id="filename" class="text-body-sm truncate">No file selected</span>
+            </div>
+        </div>
+        
+        <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant/30">
+            <a href="{% url 'admin_food_list' %}" class="px-6 py-2.5 rounded-xl border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors font-medium">Cancel</a>
+            <button type="submit" class="px-6 py-2.5 bg-tertiary text-white rounded-xl font-medium hover:bg-tertiary/80 shadow-sm hover:shadow transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">upload</span>
+                Import Images
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="mt-8 max-w-2xl bg-surface-container-low rounded-xl p-6 border border-outline-variant/30">
+    <h3 class="text-body-lg font-semibold mb-3 flex items-center gap-2">
+        <span class="material-symbols-outlined text-tertiary">table_chart</span>
+        Required Column Mapping
+    </h3>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-body-sm">
+            <thead>
+                <tr class="border-b border-outline-variant/50 text-on-surface-variant">
+                    <th class="py-2 pr-4 font-semibold">Column Name</th>
+                    <th class="py-2 pr-4 font-semibold">Description</th>
+                    <th class="py-2 font-semibold">Required</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/20 text-on-surface">
+                <tr>
+                    <td class="py-2 pr-4 font-mono text-tertiary">name / food_name</td>
+                    <td class="py-2 pr-4">Name of the food item (must match existing record)</td>
+                    <td class="py-2"><span class="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded-full">Required</span></td>
+                </tr>
+                <tr>
+                    <td class="py-2 pr-4 font-mono text-tertiary">image_url / image_name / image</td>
+                    <td class="py-2 pr-4">URL of the food image</td>
+                    <td class="py-2"><span class="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded-full">Required</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-4 max-w-2xl bg-surface-container-low rounded-xl p-6 border border-outline-variant/30">
+    <h3 class="text-body-lg font-semibold mb-3 flex items-center gap-2">
+        <span class="material-symbols-outlined text-tertiary">preview</span>
+        Example Excel Format
+    </h3>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-body-sm border border-outline-variant/30 rounded-lg overflow-hidden">
+            <thead>
+                <tr class="bg-surface-container text-on-surface-variant">
+                    <th class="py-2 px-4 font-semibold border-r border-outline-variant/30">name</th>
+                    <th class="py-2 px-4 font-semibold">image_url</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/20">
+                <tr>
+                    <td class="py-2 px-4 border-r border-outline-variant/30">Nasi Putih</td>
+                    <td class="py-2 px-4 text-on-surface-variant truncate">https://example.com/images/nasi-putih.jpg</td>
+                </tr>
+                <tr>
+                    <td class="py-2 px-4 border-r border-outline-variant/30">Telur Rebus</td>
+                    <td class="py-2 px-4 text-on-surface-variant truncate">https://example.com/images/telur-rebus.jpg</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -168,11 +168,24 @@ class DashboardHomeAPIView(APIView):
 
 
 class FluidCalculateAPIView(APIView):
-    permission_classes = [AllowAny]
-
     def post(self, request):
         serializer = FluidCalculateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        print("user: ", request.user)
+        patient = get_patient(request.user)
+        print("patient: ", patient)
+        patient.urine_output_24h_ml = serializer.validated_data['urine_output_ml']
+        patient.daily_fluid_limit_ml = serializer.validated_data['recommended_fluid_limit_ml']
+        patient.save(update_fields=['urine_output_24h_ml', 'daily_fluid_limit_ml', 'updated_at'])
+        FluidLog.objects.create(
+            patient=patient,
+            category=FluidCategory.URINE,
+            description='Urine (AI)',
+            volume_ml=serializer.validated_data['urine_output_ml'],
+            source='scan',
+        )
+        patient.sync_fluid_intake_today()
+
         return Response({
             'recommended_fluid_limit_ml': serializer.validated_data['recommended_fluid_limit_ml'],
             'status': serializer.validated_data['status'],
@@ -250,13 +263,13 @@ class UrineScanAPIView(APIView):
                 confidence=result['confidence'],
                 image=image,
             )
-            FluidLog.objects.create(
-                patient=patient,
-                category=FluidCategory.URINE,
-                description='Urine scan (AI)',
-                volume_ml=result['estimated_volume_ml'],
-                source='scan',
-            )
+            # FluidLog.objects.create(
+            #     patient=patient,
+            #     category=FluidCategory.URINE,
+            #     description='Urine scan (AI)',
+            #     volume_ml=result['estimated_volume_ml'],
+            #     source='scan',
+            # )
             # Accumulate today's urine output (not overwrite)
             total_urine_today = today_urine_ml(patient)
             patient.urine_output_24h_ml = total_urine_today
@@ -266,6 +279,7 @@ class UrineScanAPIView(APIView):
             patient.save(
                 update_fields=['urine_output_24h_ml', 'daily_fluid_limit_ml', 'updated_at'],
             )
+            patient.sync_fluid_intake_today()
             return Response({
                 'estimated_volume_ml': result['estimated_volume_ml'],
                 'confidence': result['confidence'],
@@ -318,8 +332,8 @@ class FluidIntakeAPIView(APIView):
     def post(self, request):
         patient = get_patient(request.user)
         category = request.data.get('type', 'drink')
-        if category not in ('drink', 'food'):
-            raise ValidationError({'type': 'Must be drink or food.'})
+        if category not in ('drink', 'food', 'other'):
+            raise ValidationError({'type': 'Must be drink, food, or other.'})
         name = request.data.get('name', '').strip() or 'Manual entry'
         try:
             volume_ml = int(request.data.get('volume_ml', 0))
@@ -410,6 +424,7 @@ class UrineOutputAPIView(APIView):
         patient.save(
             update_fields=['urine_output_24h_ml', 'daily_fluid_limit_ml', 'updated_at'],
         )
+        patient.sync_fluid_intake_today()
 
         return Response(
             {

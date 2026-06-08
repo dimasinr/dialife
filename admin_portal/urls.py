@@ -25,6 +25,7 @@ urlpatterns = [
     path('foods/<int:pk>/edit/', views.food_edit, name='admin_food_edit'),
     path('foods/<int:pk>/delete/', views.food_delete, name='admin_food_delete'),
     path('foods/import/', views.food_import, name='admin_food_import'),
+    path('foods/import-images/', views.food_import_images, name='admin_food_import_images'),
     
     # Education Modules
     path('education-modules/', views.education_list, name='admin_education_list'),
